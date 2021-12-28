@@ -17,11 +17,14 @@ import binascii
 def index(request):
 	html_template = loader.get_template('home/index.html')
 	context = {}
+	context['active_nav'] = 1       # by default, the first page is active
+
 	if len(request.POST) == 0:
 		context['is_fresh'] = True
 
 	# Hash
 	if 'hash_input' in request.POST:
+		context['active_nav'] = 1
 		hash_input = request.POST['hash_input'].encode('utf8')
 
 		context['has_hash_result'] = True
@@ -34,6 +37,7 @@ def index(request):
 
 	# Encode/Decode
 	if 'encode_or_decode' in request.POST:
+		context['active_nav'] = 2
 		encode_or_decode = request.POST['encode_or_decode']
 
 		# check encode_or_decode POST param
