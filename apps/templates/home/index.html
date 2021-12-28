@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChopperCP's Station</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="120x120" href="/static/assets/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/assets/img/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/static/assets/img/favicon/safari-pinned-tab.svg" color="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Fontawesome -->
+    <link type="text/css" href="/static/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+
+    <!-- Pixel CSS -->
+    <link type="text/css" href="/static/assets/css/pixel.css" rel="stylesheet">
+</head>
+
+
+<body>
+{#    {% include 'includes/navigation.html' %}#}
+<main>
+
+    {% if is_fresh %}
+        {% include 'includes/preloader.html' %}
+    {% endif %}
+    <!-- Tab Section -->
+    <div class="section section-lg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <!-- Tab Nav -->
+                    <div class="nav-wrapper position-relative mb-2">
+                        <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab"
+                                   href="#tabs-text-1" role="tab" aria-controls="tabs-text-1"
+                                   aria-selected="true">Hash Calculator</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab"
+                                   href="#tabs-text-2" role="tab" aria-controls="tabs-text-2"
+                                   aria-selected="false">Encode/Decoder</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-3-tab" data-bs-toggle="tab"
+                                   href="#tabs-text-3" role="tab" aria-controls="tabs-text-3"
+                                   aria-selected="false">Function3</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-4-tab" data-bs-toggle="tab"
+                                   href="#tabs-text-4" role="tab" aria-controls="tabs-text-4"
+                                   aria-selected="false">Function4</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- End of Tab Nav -->
+                    <!-- Tab Content -->
+                    <div class="card border-0">
+                        <div class="card-body p-0">
+                            <div class="tab-content" id="tabcontent1">
+                                {#                                Hash table pane#}
+                                <div class="tab-pane fade show active" id="tabs-text-1" role="tabpanel"
+                                     aria-labelledby="tabs-text-1-tab">
+
+                                    <form action="{% url 'index' %}" method="post" id="hash_form">
+                                        {% csrf_token %}
+                                        <div>
+                                            <label for="hash_input">Input</label>
+                                            <textarea class="form-control" placeholder="" id="hash_input"
+                                                      rows="4"
+                                                      name="hash_input">{{ request.POST.hash_input }}</textarea>
+                                        </div>
+
+                                        <div class="mt-3">
+                                            <input type="submit" class="btn btn-primary" value="Get Hash Result">
+                                        </div>
+                                    </form>
+
+                                    {% if has_hash_result %}
+                                        <div class="mt-3 table-responsive">
+                                            <table class="table table-hover"
+                                                   style="table-layout:fixed;over-flow:break-word;">
+                                                <tr>
+                                                    <th scope="col" id="hash_function_name">Hash function name</th>
+                                                    <th scope="col" id="bit_length">Bit length</th>
+                                                    <th scope="col" id="result_base64">Result (Base64)</th>
+                                                    <th scope="col" id="result_hex">Result (Hex)</th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" id="{{ md5_result.function_name }}"
+                                                        rowspan="1">{{ md5_result.function_name }}</th>
+                                                    <th scope="row" id="{{ md5_result.bit_length }}"
+                                                        headers="{{ md5_result.function_name }} bit_length">{{ md5_result.bit_length }}</th>
+                                                    <td headers="{{ md5_result.function_name }} {{ md5_result.bit_length }} result_base64">{{ md5_result.result_base64 }}</td>
+                                                    <td headers="{{ md5_result.function_name }} {{ md5_result.bit_length }} result_hex">{{ md5_result.result_hex }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" id="{{ sha1_result.function_name }}"
+                                                        rowspan="1">{{ sha1_result.function_name }}</th>
+                                                    <th scope="row" id="{{ sha1_result.bit_length }}"
+                                                        headers="{{ sha1_result.function_name }} bit_length">{{ sha1_result.bit_length }}</th>
+                                                    <td headers="{{ sha1_result.function_name }} {{ sha1_result.bit_length }} result_base64">{{ sha1_result.result_base64 }}</td>
+                                                    <td headers="{{ sha1_result.function_name }} {{ sha1_result.bit_length }} result_hex">{{ sha1_result.result_hex }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" id="SHA2" rowspan="5">SHA2</th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" id="{{ sha224_result.bit_length }}"
+                                                        headers="{{ sha224_result.function_name }} bit_length">{{ sha224_result.bit_length }}</th>
+                                                    <td headers="{{ sha224_result.function_name }} {{ sha224_result.bit_length }} result_base64">{{ sha224_result.result_base64 }}</td>
+                                                    <td headers="{{ sha224_result.function_name }} {{ sha224_result.bit_length }} result_hex">{{ sha224_result.result_hex }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" id="{{ sha256_result.bit_length }}"
+                                                        headers="{{ sha256_result.function_name }} bit_length">{{ sha256_result.bit_length }}</th>
+                                                    <td headers="{{ sha256_result.function_name }} {{ sha256_result.bit_length }} result_base64">{{ sha256_result.result_base64 }}</td>
+                                                    <td headers="{{ sha256_result.function_name }} {{ sha256_result.bit_length }} result_hex">{{ sha256_result.result_hex }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" id="{{ sha384_result.bit_length }}"
+                                                        headers="{{ sha384_result.function_name }} bit_length">{{ sha384_result.bit_length }}</th>
+                                                    <td headers="{{ sha384_result.function_name }} {{ sha384_result.bit_length }} result_base64">{{ sha384_result.result_base64 }}</td>
+                                                    <td headers="{{ sha384_result.function_name }} {{ sha384_result.bit_length }} result_hex">{{ sha384_result.result_hex }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" id="{{ sha512_result.bit_length }}"
+                                                        headers="{{ sha512_result.function_name }} bit_length">{{ sha512_result.bit_length }}</th>
+                                                    <td headers="{{ sha512_result.function_name }} {{ sha512_result.bit_length }} result_base64">{{ sha512_result.result_base64 }}</td>
+                                                    <td headers="{{ sha512_result.function_name }} {{ sha512_result.bit_length }} result_hex">{{ sha512_result.result_hex }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+                                {#                                End of hash table pane#}
+
+                                {#                                Decode/Encoder#}
+                                <div class="tab-pane fade" id="tabs-text-2" role="tabpanel"
+                                     aria-labelledby="tabs-text-2-tab">
+                                    <script>
+                                        {#make a POST request to select encode/decode#}
+
+                                        function select_encode() {
+                                            document.getElementById("encode_or_decode").setAttribute("value", "Encode")
+                                        }
+
+                                        function select_decode() {
+                                            document.getElementById("encode_or_decode").setAttribute("value", "Decode")
+                                        }
+                                    </script>
+                                    <form action="{% url 'index' %}" method="post" id="encode_decode_form">
+                                        {% csrf_token %}
+                                        <div>
+                                            <label for="encode_decode_input">Input</label>
+                                            <textarea class="form-control" placeholder="" id="encode_decode_input"
+                                                      rows="4"
+                                                      name="encode_decode_input">{{ request.POST.encode_decode_input }}</textarea>
+                                        </div>
+                                        {#                                        dropdown button to select decode/encode#}
+                                        <div class="mt-3">
+                                            <div class="btn-group me-2 mb-2">
+
+                                                <input id="encode_or_decode" name="encode_or_decode" type="text"
+                                                       class="btn btn-primary"
+                                                       value="Choose Encode/Decode" readonly>
+
+                                                <button type="button"
+                                                        class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false">
+                                                    <span class="fas fa-angle-down dropdown-arrow"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <div class="dropdown-menu py-0">
+                                                    <a class="dropdown-item rounded-top" onclick="select_encode()">
+                                                        Encode
+                                                    </a>
+                                                    <a class="dropdown-item rounded-bottom" onclick="select_decode()">
+                                                        Decode
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {#                                        select encode/decode algorithm#}
+                                        <div class="mt-3">
+                                            <h3>Encode/Decode Algorithms</h3>
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col mb-5">
+                                                        <h5>Base</h5>
+                                                        <input type="submit" class="btn btn-success mb-3"
+                                                               name="encode_decode_algorithm" value="Base16">
+                                                        <input type="submit" class="btn btn-success mb-3"
+                                                               name="encode_decode_algorithm" value="Base32">
+                                                        <input type="submit" class="btn btn-success mb-3"
+                                                               name="encode_decode_algorithm" value="Base64">
+                                                    </div>
+
+                                                    <div class="col mb-5">
+                                                        <h5>Hex</h5>
+                                                        <input type="submit" class="btn btn-warning mb-3"
+                                                               name="encode_decode_algorithm" value="Base16">
+                                                        <input type="submit" class="btn btn-warning mb-3"
+                                                               name="encode_decode_algorithm" value="Base32">
+                                                        <input type="submit" class="btn btn-warning mb-3"
+                                                               name="encode_decode_algorithm" value="Base64">
+                                                    </div>
+
+                                                    <div class="col mb-5">
+                                                        <h5>URL</h5>
+                                                        <input type="submit" class="btn btn-danger mb-3"
+                                                               name="encode_decode_algorithm" value="Base16">
+                                                        <input type="submit" class="btn btn-danger mb-3"
+                                                               name="encode_decode_algorithm" value="Base32">
+                                                        <input type="submit" class="btn btn-danger mb-3"
+                                                               name="encode_decode_algorithm" value="Base64">
+                                                    </div>
+
+                                                    <div class="col mb-5">
+                                                        <h5>Quoted-printable</h5>
+                                                        <input type="submit" class="btn btn-info mb-3"
+                                                               name="encode_decode_algorithm" value="Base16">
+                                                        <input type="submit" class="btn btn-info mb-3"
+                                                               name="encode_decode_algorithm" value="Base32">
+                                                        <input type="submit" class="btn btn-info mb-3"
+                                                               name="encode_decode_algorithm" value="Base64">
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+
+                                    {#                                    Output alert#}
+                                    {% if encode_decode_result %}
+                                        <div class="mt-3">
+                                            <div class="alert alert-info" role="alert">
+                                                {{ encode_decode_result.result }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {#                                End of Decoder/Encoder#}
+
+
+                                <div class="tab-pane fade" id="tabs-text-3" role="tabpanel"
+                                     aria-labelledby="tabs-text-3-tab">
+                                    <p>Exercitation photo booth stumptown tote bag Banksy, elit small batch freegan sed.
+                                        Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident
+                                        chillwave deep v laborum. Aliquip veniam delectus,
+                                        Marfa eiusmod Pinterest in do umami readymade swag.</p>
+                                    <p>Day handsome addition horrible sensible goodness two contempt. Evening for
+                                        married
+                                        his account removal. Estimable me disposing of be moonlight cordially
+                                        curiosity.</p>
+                                </div>
+                                <div class="tab-pane fade" id="tabs-text-4" role="tabpanel"
+                                     aria-labelledby="tabs-text-4-tab">
+                                    <p>Exercitation photo booth stumptown tote bag Banksy, elit small batch freegan sed.
+                                        Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident
+                                        chillwave deep v laborum. Aliquip veniam delectus,
+                                        Marfa eiusmod Pinterest in do umami readymade swag.</p>
+                                    <p>Day handsome addition horrible sensible goodness two contempt. Evening for
+                                        married
+                                        his account removal. Estimable me disposing of be moonlight cordially
+                                        curiosity.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of Tab Content -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Tab Section -->
+
+
+</main>
+{#    {% include 'includes/footer.html' %}#}
+{% include 'includes/scripts.html' %}
+
+</body>
+</html>
