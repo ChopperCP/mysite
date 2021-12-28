@@ -17,7 +17,7 @@ import binascii
 def index(request):
 	html_template = loader.get_template('home/index.html')
 	context = {}
-	context['active_nav'] = 1       # by default, the first page is active
+	context['active_nav'] = 1  # by default, the first page is active
 
 	if len(request.POST) == 0:
 		context['is_fresh'] = True
@@ -48,7 +48,8 @@ def index(request):
 		elif encode_or_decode == 'Decode':
 			is_encode = False
 		else:
-			return HttpResponseBadRequest()
+			context['is_bad_input'] = True
+			return HttpResponse(html_template.render(context, request))
 		context['is_encode'] = is_encode
 
 		# check encode_decode_input POST param
@@ -58,19 +59,30 @@ def index(request):
 				return HttpResponse(html_template.render(context, request))
 			encode_decode_input = encode_decode_input.encode('utf8')
 		else:
-			return HttpResponseBadRequest()
+			context['is_bad_input'] = True
+			return HttpResponse(html_template.render(context, request))
 
 		# check encode_decode_algorithm POST param
 		if 'encode_decode_algorithm' not in request.POST:
-			return HttpResponseBadRequest()
+			context['is_bad_input'] = True
+			return HttpResponse(html_template.render(context, request))
 		else:
 			algorithm = request.POST['encode_decode_algorithm']
 			# Actual cases
-			if algorithm == 'Base16':
-				context['encode_decode_result'] = EncodeDecodeResult.base16(encode_decode_input, is_encode)
+			try:
+				if algorithm == 'Base16':
+					context['encode_decode_result'] = EncodeDecodeResult.base16(encode_decode_input, is_encode)
+				elif algorithm == 'Base32':
+					context['encode_decode_result'] = EncodeDecodeResult.base32(encode_decode_input, is_encode)
+				elif algorithm == 'Base64':
+					context['encode_decode_result'] = EncodeDecodeResult.base64(encode_decode_input, is_encode)
 
-			else:
-				return HttpResponseBadRequest()
+				else:
+					context['is_bad_input'] = True
+					return HttpResponse(html_template.render(context, request))
+			except:
+				context['is_bad_input'] = True
+				return HttpResponse(html_template.render(context, request))
 
 	return HttpResponse(html_template.render(context, request))
 

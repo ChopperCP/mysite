@@ -76,5 +76,24 @@ class EncodeDecodeResult(models.Model):
 		else:
 			result = EncodeDecodeResult(algorithm="Base16", is_encode=is_encode,
 			                            result=base64.b16decode(encode_decode_input).decode('utf8'))
+		return result
 
+	@staticmethod
+	def base32(encode_decode_input: bytes, is_encode):
+		if is_encode:
+			result = EncodeDecodeResult(algorithm="Base32", is_encode=is_encode,
+			                            result=base64.b32encode(encode_decode_input).decode('utf8'))
+		else:
+			result = EncodeDecodeResult(algorithm="Base32", is_encode=is_encode,
+			                            result=base64.b32decode(encode_decode_input).decode('utf8'))
+		return result
+
+	@staticmethod
+	def base64(encode_decode_input: bytes, is_encode):
+		if is_encode:
+			result = EncodeDecodeResult(algorithm="Base64", is_encode=is_encode,
+			                            result=base64.b64encode(encode_decode_input).decode('utf8'))
+		else:
+			result = EncodeDecodeResult(algorithm="Base64", is_encode=is_encode,
+			                            result=base64.b64decode(encode_decode_input).decode('utf8'))
 		return result

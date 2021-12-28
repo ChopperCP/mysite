@@ -31,6 +31,14 @@
     <!-- Tab Section -->
     <div class="section section-lg">
         <div class="container">
+            {% if is_bad_input %}
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        {% include 'home/bad_input_warning.html' %}
+                    </div>
+                </div>
+            {% endif %}
+
             <div class="row justify-content-center">
                 <div class="col-12">
                     <!-- Tab Nav -->
@@ -250,7 +258,7 @@
                                     </form>
 
 {#                                    Output alert and Replace the output to input#}
-                                    {% if encode_decode_result %}
+                                    {% if encode_decode_result and not is_bad_input %}
                                         <script>
                                             function replace_input_from_output() {
                                                 document.getElementById("encode_decode_input").innerHTML="{{ encode_decode_result.result }}"
