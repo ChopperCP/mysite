@@ -41,7 +41,9 @@ def index(request):
 		encode_or_decode = request.POST['encode_or_decode']
 
 		# check encode_or_decode POST param
-		if encode_or_decode == "":
+		if encode_or_decode == "" or encode_or_decode == "Choose Encode/Decode":
+			context['is_bad_input'] = True
+			context['error_str'] = "Please choose Encode/Decode"
 			return HttpResponse(html_template.render(context, request))
 		elif encode_or_decode == 'Encode':
 			is_encode = True
@@ -81,7 +83,8 @@ def index(request):
 				elif algorithm == 'Hex':
 					context['encode_decode_result'] = EncodeDecodeResult.hex(encode_decode_input, is_encode)
 				elif algorithm == 'URL':
-					encode_decode_input=encode_decode_input.decode('utf8')      # We don't need bytes for URL encode/decode
+					encode_decode_input = encode_decode_input.decode(
+						'utf8')  # We don't need bytes for URL encode/decode
 					context['encode_decode_result'] = EncodeDecodeResult.url(encode_decode_input, is_encode)
 
 				else:
