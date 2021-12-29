@@ -14,6 +14,8 @@ import hashlib
 import binascii
 
 
+INPUT_MAX_LEN=10000
+
 def index(request):
 	html_template = loader.get_template('home/index.html')
 	context = {}
@@ -25,7 +27,12 @@ def index(request):
 	# Hash
 	if 'hash_input' in request.POST:
 		context['active_nav'] = 1
-		hash_input = request.POST['hash_input'].encode('utf8')
+		hash_input = request.POST['hash_input']
+		if len(hash_input)>INPUT_MAX_LEN:
+			context['is_bad_input'] = True
+			context['error_str'] = "Input too long"
+			return HttpResponse(html_template.render(context, request))
+		hash_input = hash_input.encode('utf8')
 
 		context['has_hash_result'] = True
 		context['md5_result'] = HashResult.calculate_md5_result(hash_input)
@@ -58,6 +65,10 @@ def index(request):
 		if 'encode_decode_input' in request.POST:
 			encode_decode_input = request.POST['encode_decode_input']
 			if encode_decode_input == "":
+				return HttpResponse(html_template.render(context, request))
+			if len(encode_decode_input) > INPUT_MAX_LEN:
+				context['is_bad_input'] = True
+				context['error_str'] = "Input too long"
 				return HttpResponse(html_template.render(context, request))
 			encode_decode_input = encode_decode_input.encode('utf8')
 		else:

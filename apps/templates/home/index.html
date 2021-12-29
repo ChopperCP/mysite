@@ -84,10 +84,10 @@
                                     <form action="{% url 'index' %}" method="post" id="hash_form">
                                         {% csrf_token %}
                                         <div>
-                                            <label for="hash_input">Input</label>
+                                            <label for="hash_input"><h3 class="m-0 p-0">Input</h3><br />(Max length 10000 characters)</label>
                                             <textarea class="form-control" placeholder="" id="hash_input"
                                                       rows="4"
-                                                      name="hash_input">{{ request.POST.hash_input }}</textarea>
+                                                      name="hash_input" maxlength="10000">{{ request.POST.hash_input }}</textarea>
                                         </div>
 
                                         <div class="mt-3">
@@ -173,10 +173,10 @@
                                     <form action="{% url 'index' %}" method="post" id="encode_decode_form">
                                         {% csrf_token %}
                                         <div>
-                                            <label for="encode_decode_input"><h3>Input</h3></label>
+                                            <label for="encode_decode_input"><h3 class="m-0 p-0">Input</h3><br />(Max length 10000 characters)</label>
                                             <textarea class="form-control" placeholder="" id="encode_decode_input"
                                                       rows="4"
-                                                      name="encode_decode_input">{{ request.POST.encode_decode_input }}</textarea>
+                                                      name="encode_decode_input" maxlength="10000">{{ request.POST.encode_decode_input }}</textarea>
                                         </div>
                                         {#                                        dropdown button to select decode/encode#}
                                         <div class="mt-3">
