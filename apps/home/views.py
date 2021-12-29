@@ -86,6 +86,8 @@ def index(request):
 					encode_decode_input = encode_decode_input.decode(
 						'utf8')  # We don't need bytes for URL encode/decode
 					context['encode_decode_result'] = EncodeDecodeResult.url(encode_decode_input, is_encode)
+				elif algorithm == 'Quoted-printable':
+					context['encode_decode_result'] = EncodeDecodeResult.quoted_printable(encode_decode_input, is_encode)
 
 				else:
 					context['is_bad_input'] = True

@@ -10,6 +10,7 @@ import hashlib
 import binascii
 import base64
 import urllib.parse
+import quopri
 
 
 # Create your models here.
@@ -127,4 +128,14 @@ class EncodeDecodeResult(models.Model):
 		else:
 			result = EncodeDecodeResult(algorithm="URL", is_encode=is_encode,
 			                            result=urllib.parse.unquote(encode_decode_input))
+		return result
+
+	# Quoted-printable
+	def quoted_printable(encode_decode_input: bytes, is_encode):
+		if is_encode:
+			result = EncodeDecodeResult(algorithm="Quoted-printable", is_encode=is_encode,
+			                            result=quopri.encodestring(encode_decode_input).decode('utf8'))
+		else:
+			result = EncodeDecodeResult(algorithm="Quoted-printable", is_encode=is_encode,
+			                            result=quopri.decodestring(encode_decode_input).decode('utf8'))
 		return result
