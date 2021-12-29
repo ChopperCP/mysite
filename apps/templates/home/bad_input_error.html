@@ -6,5 +6,8 @@
     </div>
     <div class="toast-body">
         Bad Input!
+        {% if error_str %}
+        <pre>{{ error_str }}</pre>
+        {% endif %}
     </div>
 </div>

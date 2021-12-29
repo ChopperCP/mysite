@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 import hashlib
 import binascii
 import base64
+import urllib.parse
 
 
 # Create your models here.
@@ -61,7 +62,7 @@ class HashResult(models.Model):
 class EncodeDecodeResult(models.Model):
 	algorithm = models.CharField(max_length=50)
 	is_encode = models.BooleanField()
-	result = models.CharField(max_length=10000)
+	result = models.CharField(max_length=200000)
 
 	def __str__(self):
 		return "{}_{}:{}".format(self.algorithm, 'Encode' if self.is_encode else 'Decode',
@@ -96,4 +97,34 @@ class EncodeDecodeResult(models.Model):
 		else:
 			result = EncodeDecodeResult(algorithm="Base64", is_encode=is_encode,
 			                            result=base64.b64decode(encode_decode_input).decode('utf8'))
+		return result
+
+	@staticmethod
+	def base85(encode_decode_input: bytes, is_encode):
+		if is_encode:
+			result = EncodeDecodeResult(algorithm="Base85", is_encode=is_encode,
+			                            result=base64.b85encode(encode_decode_input).decode('utf8'))
+		else:
+			result = EncodeDecodeResult(algorithm="Base85", is_encode=is_encode,
+			                            result=base64.b85decode(encode_decode_input).decode('utf8'))
+		return result
+
+	# Hex
+	def hex(encode_decode_input: bytes, is_encode):
+		if is_encode:
+			result = EncodeDecodeResult(algorithm="Hex", is_encode=is_encode,
+			                            result=binascii.hexlify(encode_decode_input).decode('utf8'))
+		else:
+			result = EncodeDecodeResult(algorithm="Hex", is_encode=is_encode,
+			                            result=base64.b85decode(encode_decode_input).decode('utf8'))
+		return result
+
+	# URL
+	def url(encode_decode_input: str, is_encode):
+		if is_encode:
+			result = EncodeDecodeResult(algorithm="URL", is_encode=is_encode,
+			                            result=urllib.parse.quote_plus(encode_decode_input))
+		else:
+			result = EncodeDecodeResult(algorithm="URL", is_encode=is_encode,
+			                            result=urllib.parse.unquote(encode_decode_input))
 		return result

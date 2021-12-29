@@ -34,7 +34,7 @@
             {% if is_bad_input %}
                 <div class="row justify-content-center">
                     <div class="col-12">
-                        {% include 'home/bad_input_warning.html' %}
+                        {% include 'home/bad_input_error.html' %}
                     </div>
                 </div>
             {% endif %}
@@ -218,26 +218,20 @@
                                                                name="encode_decode_algorithm" value="Base32">
                                                         <input type="submit" class="btn btn-success mb-3"
                                                                name="encode_decode_algorithm" value="Base64">
+                                                        <input type="submit" class="btn btn-success mb-3"
+                                                               name="encode_decode_algorithm" value="Base85">
                                                     </div>
 
                                                     <div class="col mb-5">
                                                         <h5>Hex</h5>
                                                         <input type="submit" class="btn btn-warning mb-3"
-                                                               name="encode_decode_algorithm" value="Base16">
-                                                        <input type="submit" class="btn btn-warning mb-3"
-                                                               name="encode_decode_algorithm" value="Base32">
-                                                        <input type="submit" class="btn btn-warning mb-3"
-                                                               name="encode_decode_algorithm" value="Base64">
+                                                               name="encode_decode_algorithm" value="Hex">
                                                     </div>
 
                                                     <div class="col mb-5">
                                                         <h5>URL</h5>
                                                         <input type="submit" class="btn btn-danger mb-3"
-                                                               name="encode_decode_algorithm" value="Base16">
-                                                        <input type="submit" class="btn btn-danger mb-3"
-                                                               name="encode_decode_algorithm" value="Base32">
-                                                        <input type="submit" class="btn btn-danger mb-3"
-                                                               name="encode_decode_algorithm" value="Base64">
+                                                               name="encode_decode_algorithm" value="URL">
                                                     </div>
 
                                                     <div class="col mb-5">

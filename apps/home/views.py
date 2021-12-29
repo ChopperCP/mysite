@@ -76,9 +76,17 @@ def index(request):
 					context['encode_decode_result'] = EncodeDecodeResult.base32(encode_decode_input, is_encode)
 				elif algorithm == 'Base64':
 					context['encode_decode_result'] = EncodeDecodeResult.base64(encode_decode_input, is_encode)
+				elif algorithm == 'Base85':
+					context['encode_decode_result'] = EncodeDecodeResult.base85(encode_decode_input, is_encode)
+				elif algorithm == 'Hex':
+					context['encode_decode_result'] = EncodeDecodeResult.hex(encode_decode_input, is_encode)
+				elif algorithm == 'URL':
+					encode_decode_input=encode_decode_input.decode('utf8')      # We don't need bytes for URL encode/decode
+					context['encode_decode_result'] = EncodeDecodeResult.url(encode_decode_input, is_encode)
 
 				else:
 					context['is_bad_input'] = True
+					context['error_str'] = "No valid Algorithm: {}".format(algorithm)
 					return HttpResponse(html_template.render(context, request))
 			except:
 				context['is_bad_input'] = True
