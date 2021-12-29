@@ -240,6 +240,12 @@
                                                                name="encode_decode_algorithm" value="Quoted-printable">
                                                     </div>
 
+                                                    <div class="col mb-5">
+                                                        <h5>HTML</h5>
+                                                        <input type="submit" class="btn btn-success mb-3"
+                                                               name="encode_decode_algorithm" value="HTML">
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -254,6 +260,10 @@
                                                 document.getElementById("encode_decode_input").innerHTML="{{ encode_decode_result.result }}"
                                             }
                                         </script>
+
+                                        <div>
+                                            <h3>Result</h3>
+                                        </div>
                                         <div class="container">
                                             <div class="row">
                                                 <div class="alert alert-info" role="alert">

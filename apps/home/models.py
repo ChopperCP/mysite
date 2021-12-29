@@ -11,7 +11,7 @@ import binascii
 import base64
 import urllib.parse
 import quopri
-
+import html
 
 # Create your models here.
 class HashResult(models.Model):
@@ -138,4 +138,14 @@ class EncodeDecodeResult(models.Model):
 		else:
 			result = EncodeDecodeResult(algorithm="Quoted-printable", is_encode=is_encode,
 			                            result=quopri.decodestring(encode_decode_input).decode('utf8'))
+		return result
+
+	# HTML
+	def html(encode_decode_input: str, is_encode):
+		if is_encode:
+			result = EncodeDecodeResult(algorithm="Quoted-printable", is_encode=is_encode,
+			                            result=html.escape(encode_decode_input))
+		else:
+			result = EncodeDecodeResult(algorithm="Quoted-printable", is_encode=is_encode,
+			                            result=html.unescape(encode_decode_input))
 		return result

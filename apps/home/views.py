@@ -13,8 +13,8 @@ from .models import HashResult, EncodeDecodeResult
 import hashlib
 import binascii
 
+INPUT_MAX_LEN = 10000
 
-INPUT_MAX_LEN=10000
 
 def index(request):
 	html_template = loader.get_template('home/index.html')
@@ -28,7 +28,7 @@ def index(request):
 	if 'hash_input' in request.POST:
 		context['active_nav'] = 1
 		hash_input = request.POST['hash_input']
-		if len(hash_input)>INPUT_MAX_LEN:
+		if len(hash_input) > INPUT_MAX_LEN:
 			context['is_bad_input'] = True
 			context['error_str'] = "Input too long"
 			return HttpResponse(html_template.render(context, request))
@@ -98,7 +98,12 @@ def index(request):
 						'utf8')  # We don't need bytes for URL encode/decode
 					context['encode_decode_result'] = EncodeDecodeResult.url(encode_decode_input, is_encode)
 				elif algorithm == 'Quoted-printable':
-					context['encode_decode_result'] = EncodeDecodeResult.quoted_printable(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.quoted_printable(encode_decode_input,
+					                                                                      is_encode)
+				elif algorithm == 'HTML':
+					encode_decode_input = encode_decode_input.decode(
+						'utf8')  # We don't need bytes for HTML encode/decode
+					context['encode_decode_result'] = EncodeDecodeResult.html(encode_decode_input, is_encode)
 
 				else:
 					context['is_bad_input'] = True
