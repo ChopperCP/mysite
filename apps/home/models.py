@@ -12,6 +12,11 @@ import base64
 import urllib.parse
 import quopri
 import html
+import codecs
+import re
+
+from apps.tools.int_to_bytes import int_to_bytes
+
 
 # Create your models here.
 class HashResult(models.Model):
@@ -148,4 +153,62 @@ class EncodeDecodeResult(models.Model):
 		else:
 			result = EncodeDecodeResult(algorithm="Quoted-printable", is_encode=is_encode,
 			                            result=html.unescape(encode_decode_input))
+		return result
+
+	# UUencode
+	def uuencode(encode_decode_input: bytes, is_encode):
+		if is_encode:
+			result = codecs.encode(encode_decode_input, 'uu').decode('utf8')  # get codec result
+			result = re.findall('begin 666 <data>\n([\\s\\S]*)\n \nend\n', result)[0]  # extract real encoded message
+		else:
+			result = b"begin 666 <data>\n" + encode_decode_input + b"\n \nend\n"  # get codec result
+			result = codecs.decode(result, 'uu')  # extract real encoded message
+
+		result = EncodeDecodeResult(algorithm="UUencode", is_encode=is_encode,
+		                            result=result)
+		return result
+
+	# XXencode
+	def xxencode(encode_decode_input: bytes, is_encode):
+		if is_encode:
+			encode_map = dict(zip(range(
+				0, 2 ** 6), iter("+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")))
+
+			while (len(encode_decode_input) % 3 != 0):
+				encode_decode_input += b'\x00'
+
+			result = ""
+			for i in range(0, len(encode_decode_input), 3):
+				curr_block = encode_decode_input[i:i + 3]
+				# turn the block into a int
+				block_int = int(binascii.b2a_hex(curr_block), 16)
+				# split the block to 4 6-bits int
+				fourbitints = [(block_int & 0xfc0000) >> 3 * 6, (block_int & 0x3f000)
+				               >> 2 * 6, (block_int & 0xfc0) >> 6, block_int & 0x3f]
+				result += ''.join(encode_map[fourbitint] for fourbitint in fourbitints)
+
+			result = EncodeDecodeResult(algorithm="XXencode", is_encode=is_encode,
+			                            result=result)
+		else:
+			encode_decode_input.decode('utf8')
+			decode_map = dict(zip(iter("+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"), range(
+				0, 2 ** 6)))
+
+			# we don't need the first character in each line (the length indicator)
+			s = ''.join(line[1:] for line in encode_decode_input.split('\n'))
+			if len(s) % 4 != 0:
+				raise Exception("Bad Input (data length not divisible by 4)")
+
+			result = b''
+			for i in range(0, len(s), 4):
+				# 4 characters each block
+				curr_encoded_block = s[i:i + 4]
+				fourbitints = [decode_map[c] for c in curr_encoded_block]
+				block_int = 0
+				for index, shift in enumerate(reversed(range(0, 4))):
+					block_int += fourbitints[index] << shift * 6
+				result += int_to_bytes(block_int)
+
+			result = EncodeDecodeResult(algorithm="XXencode", is_encode=is_encode,
+			                            result=result)
 		return result

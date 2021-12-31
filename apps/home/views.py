@@ -104,6 +104,22 @@ def index(request):
 					encode_decode_input = encode_decode_input.decode(
 						'utf8')  # We don't need bytes for HTML encode/decode
 					context['encode_decode_result'] = EncodeDecodeResult.html(encode_decode_input, is_encode)
+				elif algorithm == 'UUencode':
+					context['encode_decode_result'] = EncodeDecodeResult.uuencode(encode_decode_input, is_encode)
+				elif algorithm == 'XXencode':
+					context['encode_decode_result'] = EncodeDecodeResult.xxencode(encode_decode_input, is_encode)
+				# elif algorithm == 'PPencode':
+				# 	encode_decode_input = encode_decode_input.decode(
+				# 		'utf8')  # We don't need bytes for HTML encode/decode
+				# 	context['encode_decode_result'] = EncodeDecodeResult.html(encode_decode_input, is_encode)
+				# elif algorithm == 'AAencode':
+				# 	encode_decode_input = encode_decode_input.decode(
+				# 		'utf8')  # We don't need bytes for HTML encode/decode
+				# 	context['encode_decode_result'] = EncodeDecodeResult.html(encode_decode_input, is_encode)
+				# elif algorithm == 'JJencode':
+				# 	encode_decode_input = encode_decode_input.decode(
+				# 		'utf8')  # We don't need bytes for HTML encode/decode
+				# 	context['encode_decode_result'] = EncodeDecodeResult.html(encode_decode_input, is_encode)
 
 				else:
 					context['is_bad_input'] = True
