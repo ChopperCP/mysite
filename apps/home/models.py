@@ -174,6 +174,7 @@ class EncodeDecodeResult(models.Model):
 			encode_map = dict(zip(range(
 				0, 2 ** 6), iter("+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")))
 
+			raw_len = len(encode_decode_input)
 			while (len(encode_decode_input) % 3 != 0):
 				encode_decode_input += b'\x00'
 
@@ -187,8 +188,22 @@ class EncodeDecodeResult(models.Model):
 				               >> 2 * 6, (block_int & 0xfc0) >> 6, block_int & 0x3f]
 				result += ''.join(encode_map[fourbitint] for fourbitint in fourbitints)
 
+			# Each group of sixty output characters(corresponding to 45 input bytes) is output as a separate line preceded by an encoded character giving the number of encoded bytes on that line.
+			formatted_result = []
+			if len(result) >= 60:
+				for i in range(0, len(result), 60):
+					line = result[i:i + 60]
+					if len(line) == 60:
+						line_input_len = 45
+					else:
+						line_input_len = raw_len % 45
+					formatted_result.append(encode_map[line_input_len] + line)
+				formatted_result = '\n'.join(formatted_result)
+			else:
+				formatted_result = encode_map[len(encode_decode_input)] + result
+
 			result = EncodeDecodeResult(algorithm="XXencode", is_encode=is_encode,
-			                            result=result)
+			                            result=formatted_result)
 		else:
 			encode_decode_input.decode('utf8')
 			decode_map = dict(zip(iter("+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"), range(
@@ -210,5 +225,5 @@ class EncodeDecodeResult(models.Model):
 				result += int_to_bytes(block_int)
 
 			result = EncodeDecodeResult(algorithm="XXencode", is_encode=is_encode,
-			                            result=result)
+			                            result=result.strip(b'\x00'))
 		return result
