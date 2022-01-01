@@ -205,12 +205,12 @@ class EncodeDecodeResult(models.Model):
 			result = EncodeDecodeResult(algorithm="XXencode", is_encode=is_encode,
 			                            result=formatted_result)
 		else:
-			encode_decode_input.decode('utf8')
+			encode_decode_input=encode_decode_input.decode('utf8')
 			decode_map = dict(zip(iter("+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"), range(
 				0, 2 ** 6)))
 
 			# we don't need the first character in each line (the length indicator)
-			s = ''.join(line[1:] for line in encode_decode_input.split('\n'))
+			s = ''.join(line[1:] for line in encode_decode_input.replace('\r','').split('\n'))
 			if len(s) % 4 != 0:
 				raise Exception("Bad Input (data length not divisible by 4)")
 
@@ -225,5 +225,5 @@ class EncodeDecodeResult(models.Model):
 				result += int_to_bytes(block_int)
 
 			result = EncodeDecodeResult(algorithm="XXencode", is_encode=is_encode,
-			                            result=result.strip(b'\x00'))
+			                            result=result.strip(b'\x00').decode('utf8'))
 		return result

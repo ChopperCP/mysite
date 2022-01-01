@@ -2,6 +2,7 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+import logging
 
 from django import template
 from django.contrib.auth.decorators import login_required
@@ -125,8 +126,9 @@ def index(request):
 					context['is_bad_input'] = True
 					context['error_str'] = "No valid Algorithm: {}".format(algorithm)
 					return HttpResponse(html_template.render(context, request))
-			except:
+			except Exception as e:
 				context['is_bad_input'] = True
+				logging.error(e)
 				return HttpResponse(html_template.render(context, request))
 
 	return HttpResponse(html_template.render(context, request))
