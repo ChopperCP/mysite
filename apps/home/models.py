@@ -116,6 +116,7 @@ class EncodeDecodeResult(models.Model):
 		return result
 
 	# Hex
+	@staticmethod
 	def hex(encode_decode_input: bytes, is_encode):
 		if is_encode:
 			result = EncodeDecodeResult(algorithm="Hex", is_encode=is_encode,
@@ -126,6 +127,7 @@ class EncodeDecodeResult(models.Model):
 		return result
 
 	# URL
+	@staticmethod
 	def url(encode_decode_input: str, is_encode):
 		if is_encode:
 			result = EncodeDecodeResult(algorithm="URL", is_encode=is_encode,
@@ -136,6 +138,7 @@ class EncodeDecodeResult(models.Model):
 		return result
 
 	# Quoted-printable
+	@staticmethod
 	def quoted_printable(encode_decode_input: bytes, is_encode):
 		if is_encode:
 			result = EncodeDecodeResult(algorithm="Quoted-printable", is_encode=is_encode,
@@ -146,6 +149,7 @@ class EncodeDecodeResult(models.Model):
 		return result
 
 	# HTML
+	@staticmethod
 	def html(encode_decode_input: str, is_encode):
 		if is_encode:
 			result = EncodeDecodeResult(algorithm="Quoted-printable", is_encode=is_encode,
@@ -156,6 +160,7 @@ class EncodeDecodeResult(models.Model):
 		return result
 
 	# UUencode
+	@staticmethod
 	def uuencode(encode_decode_input: bytes, is_encode):
 		if is_encode:
 			result = codecs.encode(encode_decode_input, 'uu').decode('utf8')  # get codec result
@@ -169,6 +174,7 @@ class EncodeDecodeResult(models.Model):
 		return result
 
 	# XXencode
+	@staticmethod
 	def xxencode(encode_decode_input: bytes, is_encode):
 		if is_encode:
 			encode_map = dict(zip(range(
@@ -205,12 +211,12 @@ class EncodeDecodeResult(models.Model):
 			result = EncodeDecodeResult(algorithm="XXencode", is_encode=is_encode,
 			                            result=formatted_result)
 		else:
-			encode_decode_input=encode_decode_input.decode('utf8')
+			encode_decode_input = encode_decode_input.decode('utf8')
 			decode_map = dict(zip(iter("+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"), range(
 				0, 2 ** 6)))
 
 			# we don't need the first character in each line (the length indicator)
-			s = ''.join(line[1:] for line in encode_decode_input.replace('\r','').split('\n'))
+			s = ''.join(line[1:] for line in encode_decode_input.replace('\r', '').split('\n'))
 			if len(s) % 4 != 0:
 				raise Exception("Bad Input (data length not divisible by 4)")
 
@@ -226,4 +232,70 @@ class EncodeDecodeResult(models.Model):
 
 			result = EncodeDecodeResult(algorithm="XXencode", is_encode=is_encode,
 			                            result=result.strip(b'\x00').decode('utf8'))
+		return result
+
+	# AAencode
+	@staticmethod
+	def aaencode(encode_decode_input: str, is_encode):
+		if is_encode:
+			t = ""
+			b = [
+				"(c^_^o)",
+				"(ﾟΘﾟ)",
+				"((o^_^o) - (ﾟΘﾟ))",
+				"(o^_^o)",
+				"(ﾟｰﾟ)",
+				"((ﾟｰﾟ) + (ﾟΘﾟ))",
+				"((o^_^o) +(o^_^o))",
+				"((ﾟｰﾟ) + (o^_^o))",
+				"((ﾟｰﾟ) + (ﾟｰﾟ))",
+				"((ﾟｰﾟ) + (ﾟｰﾟ) + (ﾟΘﾟ))",
+				"(ﾟДﾟ) .ﾟωﾟﾉ",
+				"(ﾟДﾟ) .ﾟΘﾟﾉ",
+				"(ﾟДﾟ) ['c']",
+				"(ﾟДﾟ) .ﾟｰﾟﾉ",
+				"(ﾟДﾟ) .ﾟДﾟﾉ",
+				"(ﾟДﾟ) [ﾟΘﾟ]"
+			]
+			result = "ﾟωﾟﾉ= /｀ｍ´）ﾉ ~┻━┻   //*´∇｀*/ ['_']; o=(ﾟｰﾟ)  =_=3; c=(ﾟΘﾟ) =(ﾟｰﾟ)-(ﾟｰﾟ); "
+			result += "(ﾟДﾟ) =(ﾟΘﾟ)= (o^_^o)/ (o^_^o);" + \
+			          "(ﾟДﾟ)={ﾟΘﾟ: '_' ,ﾟωﾟﾉ : ((ﾟωﾟﾉ==3) +'_') [ﾟΘﾟ] " + \
+			          ",ﾟｰﾟﾉ :(ﾟωﾟﾉ+ '_')[o^_^o -(ﾟΘﾟ)] " + \
+			          ",ﾟДﾟﾉ:((ﾟｰﾟ==3) +'_')[ﾟｰﾟ] }; (ﾟДﾟ) [ﾟΘﾟ] =((ﾟωﾟﾉ==3) +'_') [c^_^o];" + \
+			          "(ﾟДﾟ) ['c'] = ((ﾟДﾟ)+'_') [ (ﾟｰﾟ)+(ﾟｰﾟ)-(ﾟΘﾟ) ];" + \
+			          "(ﾟДﾟ) ['o'] = ((ﾟДﾟ)+'_') [ﾟΘﾟ];" + \
+			          "(ﾟoﾟ)=(ﾟДﾟ) ['c']+(ﾟДﾟ) ['o']+(ﾟωﾟﾉ +'_')[ﾟΘﾟ]+ ((ﾟωﾟﾉ==3) +'_') [ﾟｰﾟ] + " + \
+			          "((ﾟДﾟ) +'_') [(ﾟｰﾟ)+(ﾟｰﾟ)]+ ((ﾟｰﾟ==3) +'_') [ﾟΘﾟ]+" + \
+			          "((ﾟｰﾟ==3) +'_') [(ﾟｰﾟ) - (ﾟΘﾟ)]+(ﾟДﾟ) ['c']+" + \
+			          "((ﾟДﾟ)+'_') [(ﾟｰﾟ)+(ﾟｰﾟ)]+ (ﾟДﾟ) ['o']+" + \
+			          "((ﾟｰﾟ==3) +'_') [ﾟΘﾟ];(ﾟДﾟ) ['_'] =(o^_^o) [ﾟoﾟ] [ﾟoﾟ];" + \
+			          "(ﾟεﾟ)=((ﾟｰﾟ==3) +'_') [ﾟΘﾟ]+ (ﾟДﾟ) .ﾟДﾟﾉ+" + \
+			          "((ﾟДﾟ)+'_') [(ﾟｰﾟ) + (ﾟｰﾟ)]+((ﾟｰﾟ==3) +'_') [o^_^o -ﾟΘﾟ]+" + \
+			          "((ﾟｰﾟ==3) +'_') [ﾟΘﾟ]+ (ﾟωﾟﾉ +'_') [ﾟΘﾟ]; " + \
+			          "(ﾟｰﾟ)+=(ﾟΘﾟ); (ﾟДﾟ)[ﾟεﾟ]='\\\\'; " + \
+			          "(ﾟДﾟ).ﾟΘﾟﾉ=(ﾟДﾟ+ ﾟｰﾟ)[o^_^o -(ﾟΘﾟ)];" + \
+			          "(oﾟｰﾟo)=(ﾟωﾟﾉ +'_')[c^_^o];" + \
+			          "(ﾟДﾟ) [ﾟoﾟ]='\\\"';" + \
+			          "(ﾟДﾟ) ['_'] ( (ﾟДﾟ) ['_'] (ﾟεﾟ+"
+			result += "(ﾟДﾟ)[ﾟoﾟ]+ "
+			for i in range(len(encode_decode_input)):
+				n = ord(encode_decode_input[i])
+				t = "(ﾟДﾟ)[ﾟεﾟ]+"
+				if n <= 127:
+					for k in list(str(oct(n)))[2:]:
+						t += b[int(k)] + "+ "
+				else:
+					t += "(oﾟｰﾟo)+ "
+					z = hex(n)[2:]
+					for o in range(4 - len(z)):
+						z = "0" + z
+					for k in list(z)[:4]:
+						t += b[int(k)] + "+ "
+				result += t
+			result += "(ﾟДﾟ)[ﾟoﾟ]) (ﾟΘﾟ)) ('_');"
+		else:
+			result = ''  # decode is handled on the client side using JS, because running JS code is necessary
+
+		result = EncodeDecodeResult(algorithm="AAencode", is_encode=is_encode,
+		                            result=result)
 		return result

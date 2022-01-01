@@ -109,6 +109,9 @@ def index(request):
 					context['encode_decode_result'] = EncodeDecodeResult.uuencode(encode_decode_input, is_encode)
 				elif algorithm == 'XXencode':
 					context['encode_decode_result'] = EncodeDecodeResult.xxencode(encode_decode_input, is_encode)
+				elif algorithm == 'AAencode':
+					encode_decode_input = encode_decode_input.decode('utf8')  # We don't need bytes for AAencode/decode
+					context['encode_decode_result'] = EncodeDecodeResult.aaencode(encode_decode_input, is_encode)
 				# elif algorithm == 'PPencode':
 				# 	encode_decode_input = encode_decode_input.decode(
 				# 		'utf8')  # We don't need bytes for HTML encode/decode
