@@ -271,7 +271,7 @@
                                     {% if encode_decode_result and not is_bad_input %}
                                         <script>
                                             function replace_input_from_output() {
-                                                document.getElementById("encode_decode_input").innerHTML="{{ encode_decode_result.result|linebreaks }}"
+                                                document.getElementById("encode_decode_input").innerHTML="{{ encode_decode_result.result|linebreaksbr }}".replaceAll("<br>","\n")
                                             }
                                         </script>
 
@@ -281,7 +281,7 @@
                                         <div class="container">
                                             <div class="row">
                                                 <div class="alert alert-info" role="alert">
-                                                    {{ encode_decode_result.result|linebreaks }}
+                                                    {{ encode_decode_result.result|linebreaksbr }}
                                                 </div>
                                             </div>
                                             <div class="row">
