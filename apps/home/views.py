@@ -71,7 +71,7 @@ def index(request):
 				context['is_bad_input'] = True
 				context['error_str'] = "Input too long"
 				return HttpResponse(html_template.render(context, request))
-			encode_decode_input = encode_decode_input.encode('utf8')
+			encode_decode_input_bytes = encode_decode_input.encode('utf8')
 		else:
 			context['is_bad_input'] = True
 			return HttpResponse(html_template.render(context, request))
@@ -85,37 +85,32 @@ def index(request):
 			# Actual cases
 			try:
 				if algorithm == 'Base16':
-					context['encode_decode_result'] = EncodeDecodeResult.base16(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.base16(encode_decode_input_bytes, is_encode)
 				elif algorithm == 'Base32':
-					context['encode_decode_result'] = EncodeDecodeResult.base32(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.base32(encode_decode_input_bytes, is_encode)
 				elif algorithm == 'Base64':
-					context['encode_decode_result'] = EncodeDecodeResult.base64(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.base64(encode_decode_input_bytes, is_encode)
 				elif algorithm == 'Base85':
-					context['encode_decode_result'] = EncodeDecodeResult.base85(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.base85(encode_decode_input_bytes, is_encode)
 				elif algorithm == 'Hex':
-					context['encode_decode_result'] = EncodeDecodeResult.hex(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.hex(encode_decode_input_bytes, is_encode)
 				elif algorithm == 'URL':
-					encode_decode_input = encode_decode_input.decode(
-						'utf8')  # We don't need bytes for URL encode/decode
 					context['encode_decode_result'] = EncodeDecodeResult.url(encode_decode_input, is_encode)
 				elif algorithm == 'Quoted-printable':
-					context['encode_decode_result'] = EncodeDecodeResult.quoted_printable(encode_decode_input,
+					context['encode_decode_result'] = EncodeDecodeResult.quoted_printable(encode_decode_input_bytes,
 					                                                                      is_encode)
 				elif algorithm == 'HTML':
-					encode_decode_input = encode_decode_input.decode(
-						'utf8')  # We don't need bytes for HTML encode/decode
-					context['encode_decode_result'] = EncodeDecodeResult.html(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.html(encode_decode_input_bytes, is_encode)
 				elif algorithm == 'UUencode':
-					context['encode_decode_result'] = EncodeDecodeResult.uuencode(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.uuencode(encode_decode_input_bytes, is_encode)
 				elif algorithm == 'XXencode':
-					context['encode_decode_result'] = EncodeDecodeResult.xxencode(encode_decode_input, is_encode)
+					context['encode_decode_result'] = EncodeDecodeResult.xxencode(encode_decode_input_bytes, is_encode)
 				elif algorithm == 'AAencode':
-					encode_decode_input = encode_decode_input.decode('utf8')  # We don't need bytes for AAencode/decode
 					context['encode_decode_result'] = EncodeDecodeResult.aaencode(encode_decode_input, is_encode)
 				elif algorithm == 'JJencode':
-					encode_decode_input = encode_decode_input.decode(
-						'utf8')  # We don't need bytes for HTML encode/decode
 					context['encode_decode_result'] = EncodeDecodeResult.jjencode(encode_decode_input, is_encode)
+				elif algorithm == 'BubbleBabble':
+					context['encode_decode_result'] = EncodeDecodeResult.bubblebabble(encode_decode_input, is_encode)
 
 				else:
 					context['is_bad_input'] = True
