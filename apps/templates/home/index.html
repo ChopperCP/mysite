@@ -257,8 +257,6 @@
                                                         <input type="submit" class="btn btn-warning mb-3"
                                                                name="encode_decode_algorithm" value="XXencode">
                                                         <input type="submit" class="btn btn-warning mb-3"
-                                                               name="encode_decode_algorithm" value="PPencode">
-                                                        <input type="submit" class="btn btn-warning mb-3"
                                                                name="encode_decode_algorithm" value="AAencode">
                                                         <input type="submit" class="btn btn-warning mb-3"
                                                                name="encode_decode_algorithm" value="JJencode">
@@ -275,7 +273,7 @@
                                     {% if encode_decode_result and not is_bad_input %}
                                         <script>
                                             function replace_input_from_output() {
-                                                document.getElementById("encode_decode_input").innerHTML = "{{ encode_decode_result.result|linebreaksbr }}".replaceAll("<br>", "\n")
+                                                document.getElementById("encode_decode_input").innerHTML = document.getElementById("encode_decode_output").innerHTML.replaceAll("<br>","\n").trim();
                                             }
                                         </script>
 
@@ -323,6 +321,7 @@
                                                                 console.log(eval(decodingScript));
                                                                 setInnerHTML(document.getElementById("encode_decode_output"), eval(decodingScript));
                                                             }
+                                                            {#auto execute when page is loaded#}
                                                             window.onload=aadecode();
                                                         </script>
                                                     {% else %}
