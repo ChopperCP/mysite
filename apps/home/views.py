@@ -113,6 +113,8 @@ def index(request):
 					context['encode_decode_result'] = EncodeDecodeResult.bubblebabble(encode_decode_input, is_encode)
 				elif algorithm == 'JSFuck':
 					context['encode_decode_result'] = EncodeDecodeResult.jsfuck(encode_decode_input, is_encode)
+				elif algorithm == 'Brainfuck':
+					context['encode_decode_result'] = EncodeDecodeResult.brainfuck(encode_decode_input, is_encode)
 
 				else:
 					context['is_bad_input'] = True

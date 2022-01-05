@@ -2,6 +2,7 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+import logging
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -14,6 +15,8 @@ import quopri
 import html
 import codecs
 import re
+import sys
+import itertools
 
 from apps.tools.int_to_bytes import int_to_bytes
 
@@ -1320,12 +1323,12 @@ class EncodeDecodeResult(models.Model):
 				if a.kind in to_stringer or b.kind in to_stringer:
 					return JSObject('String', o2string(a) + o2string(b))
 				if a.kind in ('Number', 'Boolean') and b.kind == 'undefined' or a.kind == 'undefined' and b.kind in (
-				'Number', 'Boolean'):
+						'Number', 'Boolean'):
 					return JSObject('Number', math.nan)
 				if a.kind == 'Number' and b.kind == 'Number':
 					return JSObject('Number', a.value + b.value)
 				if a.kind == 'Boolean' and b.kind in (
-				'Boolean', 'Number') or a.kind == 'Number' and b.kind == 'Boolean':
+						'Boolean', 'Number') or a.kind == 'Number' and b.kind == 'Boolean':
 					return JSObject('Number', bool2number(a.value) + bool2number(b.value))
 				raise NotImplementedError(f'{a} + {b} failed')
 
@@ -1402,6 +1405,7 @@ class EncodeDecodeResult(models.Model):
 							return JSObject('String', 'String')
 					if a.value == 'Date':
 						# I'm too lazy to generate a real time
+						default_date = 'Mon Nov 12 2018 15:54:05 GMT+0800'
 						return JSObject('String', default_date)
 					if a.value == 'RegExp':
 						return JSObject('RegExp', '/(?:)/')
@@ -1546,5 +1550,146 @@ class EncodeDecodeResult(models.Model):
 			result = fight(encode_decode_input).value
 
 		result = EncodeDecodeResult(algorithm="JSFuck", is_encode=is_encode,
+		                            result=result)
+		return result
+
+	# Brainfuck
+	@staticmethod
+	def brainfuck(encode_decode_input: bytes, is_encode):
+		if is_encode:
+			# https://www.wishingstarmoye.com/ctf/jsencode/brainfuck
+			def remove_pairs(string, pair):
+				'''Remove sequential occurrences of canceling values
+
+				Used to remove things like ++-- from brainfuck code, as this would
+				just do nothing, or collapse >>><< to just >
+				'''
+				result = []
+				count = [0, 0]
+				pair_seq = False
+
+				# this sub-function just checks the counts for which of the pair
+				# occurred more, then appends their difference to the result
+				# this has the effect of turning +++-- into just +
+				def end_seq():
+					if count == [0, 0]:
+						return
+					most_in_seq = pair[count[0] <= count[1]]
+					diff = abs(count[0] - count[1])
+					result.append(most_in_seq * diff)
+					count[0] = count[1] = 0
+
+				# goes through each character, appending to result unless it's part
+				# of a pair sequence, then collapses those as much as possible
+				for c in string:
+					if c not in pair:
+						if pair_seq:
+							end_seq()
+							pair_seq = False
+						result.append(c)
+					else:
+						count[pair.index(c)] += 1
+						pair_seq = True
+				end_seq()
+				return ''.join(result)
+
+			def minimize(brainfuck):
+				'''Remove unnecessary pairs from brainfuck code
+
+				There are two pairs of brainfuck instructions that cancel each other
+				out when in sequence. + and - because those add and subtract to the
+				current cell, and >, < because those add and subtract from the
+				pointer value. We remove these sequences to shorten code.
+				'''
+				brainfuck = remove_pairs(brainfuck, ('+', '-'))
+				brainfuck = remove_pairs(brainfuck, ('>', '<'))
+				return brainfuck
+
+			def loop_encode(string):
+				result = ""
+				if string[-1] != "\n":
+					string += "\n"
+				chrs = list(enumerate([None] + [ord(c) for c in string]))[1:]
+				sorted_chrs = reversed(sorted(chrs, key=lambda x: x[1]))
+				groups = itertools.groupby(sorted_chrs, key=lambda x: round(x[1] / 10))
+				for group in groups:
+					group_num, group_chrs = group[0], list(group[1])
+					group_chrs = sorted(group_chrs, key=lambda x: x[0])
+					result += "+" * group_num
+					result += "[>"
+					last_index = 1
+					for c in group_chrs:
+						result += ">" * (c[0] - last_index)
+						result += "+" * 10
+						last_index = c[0]
+					result += "<" * last_index + "-]"
+					last_index = 0
+					for c in group_chrs:
+						result += ">" * (c[0] - last_index)
+						op = "+" if c[1] > 10 * group_num else "-"
+						result += op * abs(c[1] - 10 * group_num)
+						last_index = c[0]
+					result += "<" * last_index
+				result += ">[.>]"
+				return minimize(result)
+
+			result = loop_encode(encode_decode_input)
+		else:
+			# https://github.com/pablojorge/brainfuck/blob/master/python/brainfuck-simple.py
+			def precompute_jumps(program):
+				stack = []
+				ret = {}
+
+				pc = 0
+
+				while not pc == len(program):
+					opcode = program[pc]
+					if opcode == "[":
+						stack.append(pc)
+					elif opcode == "]":
+						target = stack.pop()
+						ret[target] = pc
+						ret[pc] = target
+					pc += 1
+
+				return ret
+
+			def run(program, output_buffer: list):
+				buffer = [0]
+				jump_map = precompute_jumps(program)
+
+				ptr = 0
+				pc = 0
+
+				while not pc == len(program):
+					opcode = program[pc]
+					if opcode == ">":
+						ptr += 1
+						if ptr == len(buffer):
+							buffer.append(0)
+					elif opcode == "<":
+						ptr -= 1
+					elif opcode == "+":
+						buffer[ptr] += 1
+					elif opcode == "-":
+						buffer[ptr] -= 1
+					elif opcode == ".":
+						output_buffer.append(chr(buffer[ptr]))
+					elif opcode == ",":
+						buffer[ptr] = ord(sys.stdin.read(1))
+					elif opcode == "[":
+						if buffer[ptr] == 0:
+							pc = jump_map[pc]
+					elif opcode == "]":
+						if buffer[ptr] != 0:
+							pc = jump_map[pc]
+					pc += 1
+
+			output_buffer = []
+			program = "".join(filter(lambda c: c in "<>-+[],.", encode_decode_input))
+			run(program, output_buffer)
+			result = "".join(output_buffer)
+
+		result = EncodeDecodeResult(algorithm="Brainfuck", is_encode=is_encode,
 		                            result=result)
 		return result
