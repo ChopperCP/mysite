@@ -879,3 +879,671 @@ class EncodeDecodeResult(models.Model):
 		result = EncodeDecodeResult(algorithm="BubbleBabble", is_encode=is_encode,
 		                            result=result)
 		return result
+
+	# JSFuck
+	@staticmethod
+	def jsfuck(encode_decode_input: str, is_encode):
+		# https://github.com/j4ckstraw/jsfuck-py
+		from urllib import parse
+		import time
+		import math
+		import html
+		import re
+
+		if is_encode:
+			USE_CHAR_CODE = "USE_CHAR_CODE"
+			MIN, MAX = 32, 126  # 可见字符范围
+
+			SIMPLE = {
+				'false'    : '![]',
+				'true'     : '!![]',
+				'undefined': '[][[]]',
+				'NaN'      : '+[![]]',
+				# +"1e1000"
+				'Infinity' : '+(+!+[]+(!+[]+[])[!+[]+!+[]+!+[]]+[+!+[]]+[+[]]+[+[]]+[+[]])'
+			}
+
+			CONSTRUCTORS = {
+				'Array'   : '[]',
+				'Number'  : '(+[])',
+				'String'  : '([]+[])',
+				'Boolean' : '(![])',
+				'Function': '[]["fill"]',
+				'RegExp'  : 'Function("return/"+false+"/")()'
+			}
+
+			MAPPING = {
+				'a' : '(false+"")[1]',
+				'b' : '([]["entries"]()+"")[2]',
+				'c' : '([]["fill"]+"")[3]',
+				'd' : '(undefined+"")[2]',
+				'e' : '(true+"")[3]',
+				'f' : '(false+"")[0]',
+				'g' : '(false+[0]+String)[20]',
+				'h' : '(+(101))["to"+String["name"]](21)[1]',
+				'i' : '([false]+undefined)[10]',
+				'j' : '([]["entries"]()+"")[3]',
+				'k' : '(+(20))["to"+String["name"]](21)',
+				'l' : '(false+"")[2]',
+				'm' : '(Number+"")[11]',
+				'n' : '(undefined+"")[1]',
+				'o' : '(true+[]["fill"])[10]',
+				'p' : '(+(211))["to"+String["name"]](31)[1]',
+				'q' : '(+(212))["to"+String["name"]](31)[1]',
+				'r' : '(true+"")[1]',
+				's' : '(false+"")[3]',
+				't' : '(true+"")[0]',
+				'u' : '(undefined+"")[0]',
+				'v' : '(+(31))["to"+String["name"]](32)',
+				'w' : '(+(32))["to"+String["name"]](33)',
+				'x' : '(+(101))["to"+String["name"]](34)[1]',
+				'y' : '(NaN+[Infinity])[10]',
+				'z' : '(+(35))["to"+String["name"]](36)',
+
+				'A' : '(+[]+Array)[10]',
+				'B' : '(+[]+Boolean)[10]',
+				'C' : 'Function("return escape")()(("")["italics"]())[2]',
+				'D' : 'Function("return escape")()([]["fill"])["slice"]("-1")',
+				'E' : '(RegExp+"")[12]',
+				'F' : '(+[]+Function)[10]',
+				'G' : '(false+Function("return Date")()())[30]',
+				'H' : USE_CHAR_CODE,
+				'I' : '(Infinity+"")[0]',
+				'J' : USE_CHAR_CODE,
+				'K' : USE_CHAR_CODE,
+				'L' : USE_CHAR_CODE,
+				'M' : '(true+Function("return Date")()())[30]',
+				'N' : '(NaN+"")[0]',
+				'O' : '(NaN+Function("return{}")())[11]',
+				'P' : USE_CHAR_CODE,
+				'Q' : USE_CHAR_CODE,
+				'R' : '(+[]+RegExp)[10]',
+				'S' : '(+[]+String)[10]',
+				'T' : '(NaN+Function("return Date")()())[30]',
+				'U' : '(NaN+Function("return{}")()["to"+String["name"]]["call"]())[11]',
+				'V' : USE_CHAR_CODE,
+				'W' : USE_CHAR_CODE,
+				'X' : USE_CHAR_CODE,
+				'Y' : USE_CHAR_CODE,
+				'Z' : USE_CHAR_CODE,
+
+				' ' : '(NaN+[]["fill"])[11]',
+				'!' : USE_CHAR_CODE,
+				'"' : '("")["fontcolor"]()[12]',
+				'#' : USE_CHAR_CODE,
+				'$' : USE_CHAR_CODE,
+				'%' : 'Function("return escape")()([]["fill"])[21]',
+				'&' : '("")["link"](0+")[10]',
+				'\'': USE_CHAR_CODE,
+				'(' : '(undefined+[]["fill"])[22]',
+				')' : '([0]+false+[]["fill"])[20]',
+				'*' : USE_CHAR_CODE,
+				'+' : '(+(+!+[]+(!+[]+[])[!+[]+!+[]+!+[]]+[+!+[]]+[+[]]+[+[]])+[])[2]',
+				',' : '([]["slice"]["call"](false+"")+"")[1]',
+				'-' : '(+(.+[0000000001])+"")[2]',
+				'.' : '(+(+!+[]+[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+[!+[]+!+[]]+[+[]])+[])[+!+[]]',
+				'/' : '(false+[0])["italics"]()[10]',
+				':' : '(RegExp()+"")[3]',
+				';' : '("")["link"](")[14]',
+				'<' : '("")["italics"]()[0]',
+				'=' : '("")["fontcolor"]()[11]',
+				'>' : '("")["italics"]()[2]',
+				'?' : '(RegExp()+"")[2]',
+				'@' : USE_CHAR_CODE,
+				'[' : '([]["entries"]()+"")[0]',
+				'\\': USE_CHAR_CODE,
+				']' : '([]["entries"]()+"")[22]',
+				'^' : USE_CHAR_CODE,
+				'_' : USE_CHAR_CODE,
+				'`' : USE_CHAR_CODE,
+				'{' : '(true+[]["fill"])[20]',
+				'|' : USE_CHAR_CODE,
+				'}' : '([]["fill"]+"")["slice"]("-1")',
+				'~' : USE_CHAR_CODE
+			}
+
+			GLOBAL = 'Function("return this")()'
+
+			def fillMissingChars():
+				'''
+				将 USE_CHAR_CODE 替换掉
+				'''
+				for key in MAPPING:
+					if MAPPING[key] == USE_CHAR_CODE:
+						s = str(hex(ord(key)))[2:]
+						string = '''("%"+({})+"{}")'''.format(
+							re.findall('\d+', s)[0] if re.findall('\d', s) else "",
+							re.findall('[a-zA-Z]+', s)[0] if re.findall('[a-zA-Z]', s) else "")
+						MAPPING[key] = """Function("return unescape")()""" + string
+
+			def fillMissingDigits():
+				'''
+				填充MAPPING中 0-9 的数字
+				'''
+				for num in range(10):
+					output = "+[]"
+					if num > 0:
+						output = "+!" + output
+					for i in range(1, num):
+						output = "+!+[]" + output
+					if num > 1:
+						output = output[1:]
+					MAPPING[str(num)] = "[" + output + "]"
+
+			class replaceMap(object):
+				'''
+				替换 MAPPING中的
+				'''
+
+				def replace(self, pattern, replacement):
+					self.value = re.sub(pattern, replacement, self.value)
+
+				def digitReplacer(self, x):
+					x = re.findall(r'\d', x.group())[0]
+					# 正则表达式 分组
+					# python 匹配 \[(\d)\]   例如 [0]  并不是 选中分组\d 即0   而是 [0]
+					return MAPPING[x]
+
+				def numberReplacer(self, y):
+					values = list(y.group())
+					values.reverse()
+					head = int(values.pop())
+					values.reverse()
+					output = "+[]"
+
+					if head > 0:
+						output = "+!" + output
+					for i in range(1, head):
+						output = "+!+[]" + output
+					if head > 1:
+						output = output[1:]
+					output = [output] + values
+					output = "+".join(output)
+					output = re.sub(r'\d', self.digitReplacer, output)
+					return output
+
+				def __init__(self):
+					self.character = ""
+					self.value = ""
+					self.original = ""
+
+					for i in range(MIN, MAX + 1):
+						self.character = chr(i)
+						self.value = MAPPING[self.character]
+						if not self.value:
+							continue
+						self.original = self.value
+
+						for key in CONSTRUCTORS:
+							self.value = re.sub(
+								r'\b' + key, CONSTRUCTORS[key] + '["constructor"]', self.value)
+
+						for key in SIMPLE:
+							self.value = re.sub(key, SIMPLE[key], self.value)
+
+						self.replace('(\\d\\d+)', self.numberReplacer)
+						self.replace('\\((\\d)\\)', self.digitReplacer)
+						self.replace('\\[(\\d)\\]', self.digitReplacer)
+						# python 和 js中正则表达式 () 分组 有区别?
+
+						self.value = re.sub("GLOBAL", GLOBAL, self.value)
+						self.value = re.sub(r'\+""', "+[]", self.value)
+						self.value = re.sub('\"\"', "[]+[]", self.value)
+
+						MAPPING[self.character] = self.value
+
+			class replaceStrings(object):
+				'''
+				替换 字符串
+				'''
+
+				def findMissing(self):
+					self.missing = {}
+					done = False
+					for m in MAPPING:
+						value = MAPPING[m]
+						if re.search(self.regEx, value):
+							# Python offers two different primitive operations based on regular expressions:
+							# re.match() checks for a match only at the beginning of the string,
+							# while re.search() checks for a match anywhere in the string (this is what Perl does by default).
+							self.missing[m] = value
+							done = True
+					return done
+
+				def mappingReplacer(self, b):
+					return "+".join(list(b.group().strip('""')))
+
+				# strip去掉 “”
+
+				def valueReplacer(self, c):
+					c = c.group()
+					return c if c in self.missing else MAPPING[c]
+
+				# return c if self.missing[c] else MAPPING[c]
+				# js  missing[c] 不存在 为undefined
+				# python missing[c] 不存在 会报错
+
+				def __init__(self):
+					self.regEx = r'[^\[\]\(\)\!\+]{1}'
+					self.missing = {}
+					self.count = MAX - MIN
+
+					for m in MAPPING:
+						MAPPING[m] = re.sub(
+							r'\"([^\"]+)\"', self.mappingReplacer, MAPPING[m])
+
+					while self.findMissing():
+						for m in self.missing:
+							value = MAPPING[m]
+							value = re.sub(self.regEx, self.valueReplacer, value)
+							MAPPING[m] = value
+							self.missing[m] = value
+						# for self.missing  此处修改了missing的值  but ok
+						self.count -= 1
+						if self.count == 0:
+							print("Could not compile the following chars:", self.missing)
+							break
+
+			class JSFuck(object):
+				def encodeReplacer(self, c):
+					c = c.group()
+					replacement = c in SIMPLE
+					if replacement:
+						self.output.append("[" + SIMPLE[c] + "]+[]")
+					else:
+						replacement = c in MAPPING
+						if replacement:
+							self.output.append(MAPPING[c])
+						else:
+							replacement = "([]+[])[" + JSFuck("constructor") + "]" + \
+							              "[" + JSFuck("fromCharCode") + "]" + \
+							              "(" + JSFuck(str(ord(c[0]))) + ")"
+
+							self.output.append(replacement)
+							MAPPING[c] = replacement
+
+				def __init__(self, input, wrapWithEval=False, runInParentScope=False):
+					fillMissingChars()
+					fillMissingDigits()
+					replaceMap()
+					replaceStrings()
+
+					self.output = []
+					self.input = input
+					self.wrapWithEval = wrapWithEval
+					self.runInParentScope = runInParentScope
+
+				def encode(self):
+					if not self.input:
+						return ""
+
+					r = ""
+					for i in SIMPLE:
+						r += i + "|"
+					r += "."
+
+					# self.input = re.sub(r,self.encodeReplacer,self.input)
+					re.sub(r, self.encodeReplacer, self.input)
+					# 此处未改变input的值 后面 re.search 因为会判断input 是否为数字
+
+					self.output = "+".join(self.output)
+					if re.search(r'^\d$', self.input):
+						self.output += "+[]"
+
+					if self.wrapWithEval:
+						if self.runInParentScope:
+							self.output = "[][" + JSFuck("fill").encode() + "]" + \
+							              "[" + JSFuck("constructor").encode() + "]" + \
+							              "(" + JSFuck("return eval").encode() + ")()" + \
+							              "(" + self.output + ")"
+						else:
+							self.output = "[][" + JSFuck("fill").encode() + "]" + \
+							              "[" + JSFuck("constructor").encode() + "]" + \
+							              "(" + self.output + ")()"
+
+					return self.output
+
+			encoder = JSFuck(encode_decode_input)
+			result = encoder.encode()
+		else:
+			def date(millisecond):
+				weekday, month, day, tm, year = time.ctime(millisecond / 1000).split()
+				if int(day) < 10:
+					day = '0' + day
+				return ' '.join((weekday, month, day, year, tm, 'GMT+0800'))
+
+			class Node():
+				def __init__(self, kind, value, raw):
+					self.kind = kind
+					self.value = value
+					self.raw = raw
+
+				def __str__(self):
+					return f'Node {self.kind} {self.value}'
+
+			class JSObject():
+				def __init__(self, kind, value=None):
+					self.kind = kind
+					self.value = value
+
+				def __str__(self):
+					if isinstance(self.value, list):
+						value = '[' + ','.join(str(x) for x in self.value) + ']'
+					elif isinstance(self.value, tuple):
+						value = '(' + ','.join(str(x) for x in self.value) + ')'
+					else:
+						value = self.value
+					return f'JSObject {self.kind} {value}'
+
+			class JSCode():
+				def __init__(self, code):
+					self.code = code
+
+				def __str__(self):
+					return f'JSCode {self.code}'
+
+			def bool2number(b):
+				if b is True:
+					return 1
+				if b is False:
+					return 0
+				return b
+
+			def array2string(a):
+				return ','.join(o2string(x) for x in a)
+
+			def bool2string(b):
+				if b is True:
+					return 'true'
+				if b is False:
+					return 'false'
+
+			def numberToString(n, b):
+				if b < 2 or b > 36:
+					raise Exception()
+				series = '0123456789abcdefghijklmnopqrstuvwxyz'
+				result = ''
+				while True:
+					q, r = divmod(n, b)
+					result = series[r] + result
+					if q == 0:
+						break
+					n = q
+				return result
+
+			def int_like(o: JSObject):
+				if o.kind == 'Number' and isinstance(o.value, int) or o.kind == 'String' and re.match(r'[\+\-]?\d+',
+				                                                                                      o.value):
+					return True
+				return False
+
+			def o2string(o: JSObject, base=None):
+				if o.kind == 'String':
+					return o.value
+				if o.kind == 'Number':
+					if math.isnan(o.value):
+						return 'NaN'
+					if o.value == math.inf:
+						return 'Infinity'
+					if base is None:
+						return str(o.value)
+					return numberToString(o.value, base)
+				if o.kind == 'Array':
+					return array2string(o.value)
+				if o.kind == 'Boolean':
+					return bool2string(o.value)
+				if o.kind == 'undefined':
+					return 'undefined'
+				if o.kind == 'Function':
+					if o.value in ('filter', 'String', 'Array', 'Boolean', 'RegExp', 'Number', 'Function', 'fill'):
+						return 'function ' + o.value + '() { [native code] }'
+				if o.kind == 'Object':
+					if o.value == 'this':
+						return '[object Window]'
+					if o.value == 'Array Iterator':
+						return '[object Array Iterator]'
+					if o.value == '{}':
+						return '[object Object]'
+				if o.kind == 'Date':
+					return date(o.value)
+				if o.kind == 'RegExp':
+					return o.value
+				raise NotImplementedError(f'{o} to String failed')
+
+			# a+b
+
+			def add(a, b):
+				to_stringer = ('Array', 'Function', 'Object', 'String', 'RegExp', 'Date')
+				if a is None:
+					return b
+				if a.kind in to_stringer or b.kind in to_stringer:
+					return JSObject('String', o2string(a) + o2string(b))
+				if a.kind in ('Number', 'Boolean') and b.kind == 'undefined' or a.kind == 'undefined' and b.kind in (
+				'Number', 'Boolean'):
+					return JSObject('Number', math.nan)
+				if a.kind == 'Number' and b.kind == 'Number':
+					return JSObject('Number', a.value + b.value)
+				if a.kind == 'Boolean' and b.kind in (
+				'Boolean', 'Number') or a.kind == 'Number' and b.kind == 'Boolean':
+					return JSObject('Number', bool2number(a.value) + bool2number(b.value))
+				raise NotImplementedError(f'{a} + {b} failed')
+
+			# !
+
+			def reverse(o: JSObject):
+				if o.kind == 'Array':  # ![1]=false
+					return JSObject('Boolean', False)
+				if o.kind == 'Boolean':  # !false=true
+					return JSObject('Boolean', not o.value)
+				if o.kind == 'Number':
+					if o.value == 0 or math.isnan(o.value):  # !0=true,!NaN=true
+						return JSObject('Boolean', True)
+					return JSObject('Boolean', False)  # !1=false
+				raise NotImplementedError(f'! {o} failed')
+
+			def call(a, b):
+				if a is None and b.kind == 'Function' and isinstance(b.value, tuple) and b.value[0] == 'toString':
+					return JSObject('String', '[object Undefined]')
+				if isinstance(b, JSObject) and b.kind == 'Array' and b.value[0].kind == 'String':
+					if b.value[0].value == 'constructor':
+						return JSObject('Function', a.kind)
+					if b.value[0].value == 'toString':
+						return JSObject('Function', ('toString', a))
+				if a.kind == 'Array' and b.kind == 'Array':
+					if b.value[0].kind == 'Array':
+						return JSObject('undefined')
+					if b.value[0].kind == 'String':
+						if b.value[0].value == 'filter':
+							return JSObject('Function', 'filter')
+						if b.value[0].value == 'concat':
+							return JSObject('Function', ('concat', a))
+						if b.value[0].value == 'fill':
+							return JSObject('Function', 'fill')
+						if b.value[0].value == 'entries':
+							return JSObject('Function', 'entries')
+						if b.value[0].value == 'slice':
+							return JSObject('Function', ('slice', a))
+				if a.kind == 'String':
+					if b.kind == 'Array':
+						if int_like(b.value[0]):
+							return JSObject('String', a.value[int(b.value[0].value)])
+						if b.value[0].kind == 'String':
+							if b.value[0].value in ('italics', 'fontcolor', 'link', 'slice'):
+								return JSObject('Function', (b.value[0].value, a))
+					if b.kind == 'Function' and \
+							isinstance(b.value, tuple) and b.value[0] == 'slice' and b.value[1].kind == 'Array':
+						return JSObject('Array', [JSObject('String', x) for x in a.value])
+				if a.kind == 'Function':
+					# f()
+					if a.value == 'escape':
+						return JSObject('String', parse.quote(o2string(b)))
+					if a.value == 'unescape':
+						return JSObject('String', parse.unquote(b.value))
+					if a.value == 'Function':
+						if b is None:
+							return JSObject('Function', JSObject('String', ''))
+						if b.kind == 'String':
+							m = re.match(r'return(\s\S.*|[\/\{]\S+)', b.value)
+							if m:
+								return_value = m.group(1).strip()
+								return JSObject('Function', ('return', return_value))
+							return JSObject('Function', b)
+					if a.value == 'Array':
+						if b is None:
+							return JSObject('Array', [])
+						if b.kind == 'String':
+							return JSObject('Array', [b])
+					# potential bug: not distinguish f[] and f([])
+					if a.value == 'String' and b.kind == 'Array' and b.value[0].kind == 'String':
+						if b.value[0].value == 'fromCharCode':
+							return JSObject('Function', 'fromCharCode')
+						if b.value[0].value == 'name':
+							return JSObject('String', 'String')
+					if a.value == 'Date':
+						# I'm too lazy to generate a real time
+						return JSObject('String', default_date)
+					if a.value == 'RegExp':
+						return JSObject('RegExp', '/(?:)/')
+					if a.value == 'fromCharCode':
+						return JSObject('String', chr(int(b.value)))
+					if a.value == 'eval':
+						if b is None:
+							return JSCode('')
+						if b.kind == 'String':
+							return JSCode(b.value)
+					if a.value == 'entries':
+						return JSObject('Object', 'Array Iterator')
+					if isinstance(a.value, tuple):
+						if a.value[0] == 'return':
+							return_value = a.value[1]
+							if return_value in ('escape', 'unescape', 'italics', 'Date', 'eval'):
+								return JSObject('Function', return_value)
+							if return_value == 'this':
+								return JSObject('Object', 'this')
+							if return_value[0] == '/':
+								return JSObject('RegExp', return_value)
+							if return_value[0] == '{':
+								return JSObject('Object', return_value)
+							m = re.match(r'new\s+Date\((\d+)\)', return_value)
+							if m:
+								return JSObject('Date', int(m.group(1)))
+						if a.value[0] == 'italics':
+							return JSObject('String', f'<i>{a.value[1].value}</i>')
+						if a.value[0] == 'fontcolor':
+							return JSObject('String', f'<font color="undefined">{a.value[1].value}</font>')
+						if a.value[0] == 'concat' and b.kind == 'Array':
+							return JSObject('Array', a.value[1].value + b.value)
+						if a.value[0] == 'toString':
+							if b is None:
+								return JSObject('String', o2string(a.value[1]))
+							if int_like(b):
+								return JSObject('String', o2string(a.value[1], int(b.value)))
+						if a.value[0] == 'link':
+							return JSObject('String', f'<a href="{html.escape(b.value)}">{a.value[1].value}</a>')
+						if a.value[0] == 'slice' and int_like(b):
+							return JSObject('String', a.value[1].value[int(b.value)])
+						if a.value[0] == 'call':
+							return call(b, a.value[1])
+					if b is None and isinstance(a.value, JSObject) and a.value.kind == 'String':
+						return JSCode(a.value.value)
+					# f.g
+					if isinstance(b, JSObject) and b.kind == 'Array':
+						if b.value[0].value == 'call':
+							return JSObject('Function', ('call', a))
+				raise NotImplementedError(f'{a} call {b} failed')
+
+			# +
+
+			def positive(o):
+				if o.kind == 'Array':
+					if len(o.value) == 0:  # +[]=0
+						return JSObject('Number', 0)
+					if o.value[0].kind == 'Number':  # +[1]=1
+						return JSObject('Number', o.value[0].value)
+					if o.value[0].kind == 'Boolean':  # +[true]=NaN
+						return JSObject('Number', math.nan)
+				if o.kind == 'Boolean':  # +false=0
+					return JSObject('Number', bool2number(o.value))
+				if o.kind == 'String':  # +"1"=1
+					try:
+						value = int(o.value)
+					except:
+						value = float(o.value)
+					return JSObject('Number', value)
+				raise NotImplementedError(f'+ {o} failed')
+
+			def evaluate_term(o):
+				if o[0] == '!':
+					return reverse(evaluate_term(o[1:]))
+				if o[0] == '+':
+					return positive(evaluate_term(o[1:]))
+				evaluated = [evaluate(item) for item in o]
+				result = evaluated[0]
+				for item in evaluated[1:]:
+					result = call(result, item)
+				return result
+
+			def evaluate_list(o):
+				if len(o) == 0:
+					return None
+				start = 0
+				now = 0
+				terms = []
+				while now < len(o):
+					if o[now] == '#':
+						terms.append(evaluate_term(o[start:now]))
+						start = now + 1
+						now = start
+					now += 1
+				terms.append(evaluate_term(o[start:now]))
+				result = None
+				for term in terms:
+					result = add(result, term)
+				return result
+
+			def evaluate(o):
+				if isinstance(o, list):
+					return evaluate_list(o)
+				if not isinstance(o, Node):
+					raise Exception()
+				if o.kind == '[':
+					value = evaluate(o.value)
+					return JSObject('Array', [value] if value else [])
+				if o.kind == '(':
+					return evaluate(o.value)
+
+			def fight(jsfuck_code):
+				# build simple AST
+				stack = []
+				aux = []
+				pairs = {']': '[', ')': '('}
+				for index, c in enumerate(jsfuck_code):
+					if c in ('[', '(', '!'):
+						stack.append(c)
+						aux.append(index)
+					elif c in pairs:
+						left = pairs[c]
+						i = len(stack) - 1
+						while stack[i] != left:
+							i -= 1
+						node = Node(left, stack[i + 1:], jsfuck_code[aux[i]:index + 1])
+						stack = stack[:i]
+						stack.append(node)
+						aux = aux[:i]
+						aux.append(None)
+					elif c == '+':
+						if len(stack) > 0 and isinstance(stack[-1], Node):
+							stack.append('#')
+							aux.append(None)
+						else:
+							stack.append('+')
+							aux.append(None)
+					else:
+						raise Exception(f'not jsfuck character {c}')
+				return evaluate(stack)
+
+			result = fight(encode_decode_input).value
+
+		result = EncodeDecodeResult(algorithm="JSFuck", is_encode=is_encode,
+		                            result=result)
+		return result
