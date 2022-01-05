@@ -1206,6 +1206,7 @@ class EncodeDecodeResult(models.Model):
 			encoder = JSFuck(encode_decode_input)
 			result = encoder.encode()
 		else:
+			# https://github.com/eagleoflqj/antiJSFuck
 			def date(millisecond):
 				weekday, month, day, tm, year = time.ctime(millisecond / 1000).split()
 				if int(day) < 10:
