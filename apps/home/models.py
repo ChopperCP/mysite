@@ -17,6 +17,7 @@ import codecs
 import re
 import sys
 import itertools
+import string
 
 from apps.tools.int_to_bytes import int_to_bytes
 
@@ -1691,5 +1692,70 @@ class EncodeDecodeResult(models.Model):
 			result = "".join(output_buffer)
 
 		result = EncodeDecodeResult(algorithm="Brainfuck", is_encode=is_encode,
+		                            result=result)
+		return result
+
+	# CoreValue
+	@staticmethod
+	def corevalue(encode_decode_input: str, is_encode):
+		core_values = ['富强', '民主', '文明', '和谐', '自由',
+		               '平等', '公正', '法治', '爱国', '敬业', '诚信', '友善']
+		if is_encode:
+			result = ""
+
+			hexes = ""
+			for c in encode_decode_input:
+				if c in string.ascii_letters + string.digits + "-_.!~*'()":
+					hexes += hex(ord(c))[2:]  # hex of UTF-8 code point
+				else:
+					hexes += c
+			hexes = urllib.parse.quote(hexes).replace('%', '')
+			# for each character
+
+			core_value_indicies = []
+			for h in hexes:
+				# for each hex character in the hex value
+				h_int = int(h, 16)
+				if h_int < 10:
+					core_value_indicies.append(h_int)
+				else:
+					# In the original implementation, (https://github.com/sym233/core-values-encoder/blob/a419ea532629782ebe7442a8682b72bb5ae3eab5/src/index.js#L51), random is introduced.
+					# Although it doesn't effect decoding, I think it's a bad idea to produce possible different encoded text.
+					# So, only the first case (if h_int>=10, push 10 and h_int-10) is kept
+					# If you are wondering, the second case is (if h_int>=10, push 11 and h_int-11) and the posibility of each case is 50-50.
+					core_value_indicies.append(10)
+					core_value_indicies.append(h_int - 10)
+
+			# map the ints to their corresponding core value phrase
+			result += ''.join([core_values[core_value_index]
+			                   for core_value_index in core_value_indicies])
+
+		else:
+			decode_map = dict(zip(core_values, range(len(core_values))))
+			s_list = [encode_decode_input[i:i + 2] for i in range(0, len(encode_decode_input), 2)]
+			core_value_indicies = [decode_map[core_value]
+			                       for core_value in s_list]
+
+			hexes = []
+			is_skip = False
+			for i in range(len(core_value_indicies)):
+				if not is_skip:
+					if core_value_indicies[i] < 10:
+						hexes.append(str(core_value_indicies[i]))
+					else:
+						hexes.append(hex(core_value_indicies[i + 1] + 10)[2:])
+						is_skip = True
+				else:
+					is_skip = False
+
+			url_encoded = ""
+			for i in range(len(hexes)):
+				if i % 2 == 0:
+					url_encoded += '%'
+				url_encoded += hexes[i]
+
+			result = urllib.parse.unquote(url_encoded)
+
+		result = EncodeDecodeResult(algorithm="CoreValue", is_encode=is_encode,
 		                            result=result)
 		return result
