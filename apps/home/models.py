@@ -1759,3 +1759,14 @@ class EncodeDecodeResult(models.Model):
 		result = EncodeDecodeResult(algorithm="CoreValue", is_encode=is_encode,
 		                            result=result)
 		return result
+
+	# Punycode
+	@staticmethod
+	def punycode(encode_decode_input: str, is_encode):
+		if is_encode:
+			result=encode_decode_input.encode('punycode').decode('utf8')
+		else:
+			result=encode_decode_input.encode('utf8').decode('punycode')
+		result = EncodeDecodeResult(algorithm="Punycode", is_encode=is_encode,
+		                            result=result)
+		return result

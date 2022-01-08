@@ -117,6 +117,8 @@ def index(request):
 					context['encode_decode_result'] = EncodeDecodeResult.brainfuck(encode_decode_input, is_encode)
 				elif algorithm == '社会主义核心价值观':
 					context['encode_decode_result'] = EncodeDecodeResult.corevalue(encode_decode_input, is_encode)
+				elif algorithm == 'Punycode':
+					context['encode_decode_result'] = EncodeDecodeResult.punycode(encode_decode_input, is_encode)
 
 				else:
 					context['is_bad_input'] = True
