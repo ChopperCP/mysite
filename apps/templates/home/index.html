@@ -214,8 +214,8 @@
                                             <h3>Encode/Decode Algorithms</h3>
                                             <div class="container mt-3">
                                                 <div class="row">
-                                                    <div class="col mb-5">
-                                                        <h5>Base</h5>
+                                                    <div class="col mb-5 alert-success">
+                                                        <h5 class="mt-3">Base</h5>
                                                         <input type="submit" class="btn btn-success mb-3"
                                                                name="encode_decode_algorithm" value="Base16">
                                                         <input type="submit" class="btn btn-success mb-3"
@@ -226,32 +226,32 @@
                                                                name="encode_decode_algorithm" value="Base85">
                                                     </div>
 
-                                                    <div class="col mb-5">
-                                                        <h5>Hex</h5>
+                                                    <div class="col mb-5 alert-warning">
+                                                        <h5 class="mt-3">Hex</h5>
                                                         <input type="submit" class="btn btn-warning mb-3"
                                                                name="encode_decode_algorithm" value="Hex">
                                                     </div>
 
-                                                    <div class="col mb-5">
-                                                        <h5>URL</h5>
+                                                    <div class="col mb-5 alert-danger">
+                                                        <h5 class="mt-3">URL</h5>
                                                         <input type="submit" class="btn btn-danger mb-3"
                                                                name="encode_decode_algorithm" value="URL">
                                                     </div>
 
-                                                    <div class="col mb-5">
-                                                        <h5>Quoted-printable</h5>
+                                                    <div class="col mb-5 alert-info">
+                                                        <h5 class="mt-3">Quoted-printable</h5>
                                                         <input type="submit" class="btn btn-info mb-3"
                                                                name="encode_decode_algorithm" value="Quoted-printable">
                                                     </div>
 
-                                                    <div class="col mb-5">
-                                                        <h5>HTML</h5>
+                                                    <div class="col mb-5 alert-success">
+                                                        <h5 class="mt-3">HTML</h5>
                                                         <input type="submit" class="btn btn-success mb-3"
                                                                name="encode_decode_algorithm" value="HTML">
                                                     </div>
 
-                                                    <div class="col mb-5">
-                                                        <h5>Misc</h5>
+                                                    <div class="col mb-5 alert-warning">
+                                                        <h5 class="mt-3">Misc</h5>
                                                         <input type="submit" class="btn btn-warning mb-3"
                                                                name="encode_decode_algorithm" value="UUencode">
                                                         <input type="submit" class="btn btn-warning mb-3"
@@ -283,7 +283,7 @@
                                     {% if encode_decode_result and not is_bad_input %}
                                         <script>
                                             function replace_input_from_output() {
-                                                document.getElementById("encode_decode_input").innerHTML = document.getElementById("encode_decode_output").innerHTML.replaceAll("<br>","\n").trim();
+                                                document.getElementById("encode_decode_input").innerHTML = document.getElementById("encode_decode_output").innerHTML.replaceAll("<br>", "\n").trim();
                                             }
                                         </script>
 
@@ -292,19 +292,21 @@
                                         </div>
                                         <div class="container">
                                             <div class="row">
-                                                <div class="alert alert-info" role="alert" id="encode_decode_output" onload="aadecode()">
+                                                <div class="alert alert-info" role="alert" id="encode_decode_output"
+                                                     onload="aadecode()">
                                                     {% if encode_decode_result.algorithm == "AAencode" and encode_decode_result.is_encode == False %}
-                                                        <script >
-                                                            let setInnerHTML = function(elm, html) {
-                                                              elm.innerHTML = html;
-                                                              Array.from(elm.querySelectorAll("script")).forEach( oldScript => {
-                                                                const newScript = document.createElement("script");
-                                                                Array.from(oldScript.attributes)
-                                                                  .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
-                                                                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                                                                oldScript.parentNode.replaceChild(newScript, oldScript);
-                                                              });
+                                                        <script>
+                                                            let setInnerHTML = function (elm, html) {
+                                                                elm.innerHTML = html;
+                                                                Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
+                                                                    const newScript = document.createElement("script");
+                                                                    Array.from(oldScript.attributes)
+                                                                        .forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                                                                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                                                                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                                                                });
                                                             };
+
                                                             function aadecode() {
                                                                 text = document.getElementById("encode_decode_input").innerHTML;
                                                                 let evalPreamble = "(\uFF9F\u0414\uFF9F) ['_'] ( (\uFF9F\u0414\uFF9F) ['_'] (";
@@ -331,8 +333,9 @@
                                                                 console.log(eval(decodingScript));
                                                                 setInnerHTML(document.getElementById("encode_decode_output"), eval(decodingScript));
                                                             }
+
                                                             {#auto execute when page is loaded#}
-                                                            window.onload=aadecode();
+                                                            window.onload = aadecode();
                                                         </script>
                                                     {% else %}
                                                         {{ encode_decode_result.result|linebreaksbr }}
