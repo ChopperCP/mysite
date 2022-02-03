@@ -17,7 +17,7 @@ import binascii
 INPUT_MAX_LEN = 10000
 
 
-def index(request):
+def index(request,is_api=False):
 	html_template = loader.get_template('home/index.html')
 	context = {}
 	context['active_nav'] = 1  # by default, the first page is active
@@ -52,6 +52,8 @@ def index(request):
 		if encode_or_decode == "" or encode_or_decode == "Choose Encode/Decode":
 			context['is_bad_input'] = True
 			context['error_str'] = "Please choose Encode/Decode"
+			if is_api:
+				return context
 			return HttpResponse(html_template.render(context, request))
 		elif encode_or_decode == 'Encode':
 			is_encode = True
@@ -59,6 +61,8 @@ def index(request):
 			is_encode = False
 		else:
 			context['is_bad_input'] = True
+			if is_api:
+				return context
 			return HttpResponse(html_template.render(context, request))
 		context['is_encode'] = is_encode
 
@@ -66,19 +70,27 @@ def index(request):
 		if 'encode_decode_input' in request.POST:
 			encode_decode_input = request.POST['encode_decode_input']
 			if encode_decode_input == "":
+				if is_api:
+					return context
 				return HttpResponse(html_template.render(context, request))
 			if len(encode_decode_input) > INPUT_MAX_LEN:
 				context['is_bad_input'] = True
 				context['error_str'] = "Input too long"
+				if is_api:
+					return context
 				return HttpResponse(html_template.render(context, request))
 			encode_decode_input_bytes = encode_decode_input.encode('utf8')
 		else:
 			context['is_bad_input'] = True
+			if is_api:
+				return context
 			return HttpResponse(html_template.render(context, request))
 
 		# check encode_decode_algorithm POST param
 		if 'encode_decode_algorithm' not in request.POST:
 			context['is_bad_input'] = True
+			if is_api:
+				return context
 			return HttpResponse(html_template.render(context, request))
 		else:
 			algorithm = request.POST['encode_decode_algorithm']
@@ -123,12 +135,18 @@ def index(request):
 				else:
 					context['is_bad_input'] = True
 					context['error_str'] = "No valid Algorithm: {}".format(algorithm)
+					if is_api:
+						return context
 					return HttpResponse(html_template.render(context, request))
 			except Exception as e:
 				context['is_bad_input'] = True
 				logging.error(e)
+				if is_api:
+					return context
 				return HttpResponse(html_template.render(context, request))
 
+	if is_api:
+		return context
 	return HttpResponse(html_template.render(context, request))
 
 

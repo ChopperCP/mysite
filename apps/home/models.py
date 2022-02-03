@@ -7,6 +7,7 @@ import logging
 from django.db import models
 from django.contrib.auth.models import User
 
+import json
 import hashlib
 import binascii
 import base64
@@ -23,7 +24,7 @@ from apps.tools.int_to_bytes import int_to_bytes
 
 
 # Create your models here.
-class HashResult(models.Model):
+class HashResult(models.Model, ):
 	function_name = models.CharField(max_length=50)
 	bit_length = models.IntegerField()
 	result_base64 = models.CharField(max_length=1024)
@@ -1764,9 +1765,9 @@ class EncodeDecodeResult(models.Model):
 	@staticmethod
 	def punycode(encode_decode_input: str, is_encode):
 		if is_encode:
-			result=encode_decode_input.encode('punycode').decode('utf8')
+			result = encode_decode_input.encode('punycode').decode('utf8')
 		else:
-			result=encode_decode_input.encode('utf8').decode('punycode')
+			result = encode_decode_input.encode('utf8').decode('punycode')
 		result = EncodeDecodeResult(algorithm="Punycode", is_encode=is_encode,
 		                            result=result)
 		return result
