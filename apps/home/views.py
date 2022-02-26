@@ -9,15 +9,16 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import loader
 from django.urls import reverse
-from .models import HashResult, EncodeDecodeResult
+from django.core.exceptions import ObjectDoesNotExist
+
+from apps.home.models import HashResult, EncodeDecodeResult
+from apps.utils.consts import *
 
 import hashlib
 import binascii
 
-INPUT_MAX_LEN = 10000
 
-
-def index(request,is_api=False):
+def index(request, is_api=False):
 	html_template = loader.get_template('home/index.html')
 	context = {}
 	context['active_nav'] = 1  # by default, the first page is active
@@ -33,7 +34,6 @@ def index(request,is_api=False):
 			context['is_bad_input'] = True
 			context['error_str'] = "Input too long"
 			return HttpResponse(html_template.render(context, request))
-		hash_input = hash_input.encode('utf8')
 
 		context['has_hash_result'] = True
 		context['md5_result'] = HashResult.calculate_md5_result(hash_input)
@@ -42,6 +42,16 @@ def index(request,is_api=False):
 		context['sha256_result'] = HashResult.calculate_sha256_result(hash_input)
 		context['sha384_result'] = HashResult.calculate_sha384_result(hash_input)
 		context['sha512_result'] = HashResult.calculate_sha512_result(hash_input)
+
+		# if the plaintext does not exist in the DB, save the result to database.
+		query_set = HashResult.objects.filter(plaintext=hash_input)
+		if len(query_set) == 0:
+			context['md5_result'].save()
+			context['sha1_result'].save()
+			context['sha224_result'].save()
+			context['sha256_result'].save()
+			context['sha384_result'].save()
+			context['sha512_result'].save()
 
 	# Encode/Decode
 	if 'encode_or_decode' in request.POST:

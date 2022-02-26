@@ -6,6 +6,7 @@ import logging
 
 from django.db import models
 from django.contrib.auth.models import User
+from apps.utils.consts import *
 
 import json
 import hashlib
@@ -20,54 +21,73 @@ import sys
 import itertools
 import string
 
-from apps.tools.int_to_bytes import int_to_bytes
+from apps.utils.int_to_bytes import int_to_bytes
 
 
 # Create your models here.
-class HashResult(models.Model, ):
+class HashResult(models.Model):
+	plaintext = models.CharField(max_length=INPUT_MAX_LEN,db_index=True)
 	function_name = models.CharField(max_length=50)
 	bit_length = models.IntegerField()
 	result_base64 = models.CharField(max_length=1024)
 	result_hex = models.CharField(max_length=1024)
 
 	def __str__(self):
-		return "{}_{}:{}".format(self.function_name, self.bit_length, self.result_base64)
+		return "{}_{}_{}:{}".format(self.function_name, self.bit_length, self.plaintext, self.result_hex)
 
 	@staticmethod
-	def calculate_md5_result(hash_input: bytes):
+	def calculate_md5_result(hash_input: str):
+		plaintext = hash_input
+		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.md5(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.md5(hash_input).digest()).decode('utf8')
-		return HashResult(function_name='MD5', bit_length=128, result_base64=result_base64, result_hex=result_hex)
+		return HashResult(plaintext=plaintext, function_name='MD5', bit_length=128, result_base64=result_base64,
+		                  result_hex=result_hex)
 
 	@staticmethod
-	def calculate_sha1_result(hash_input: bytes):
+	def calculate_sha1_result(hash_input: str):
+		plaintext = hash_input
+		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha1(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha1(hash_input).digest()).decode('utf8')
-		return HashResult(function_name='SHA1', bit_length=160, result_base64=result_base64, result_hex=result_hex)
+		return HashResult(plaintext=plaintext, function_name='SHA1', bit_length=160, result_base64=result_base64,
+		                  result_hex=result_hex)
 
 	@staticmethod
-	def calculate_sha224_result(hash_input: bytes):
+	def calculate_sha224_result(hash_input: str):
+		plaintext = hash_input
+		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha224(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha224(hash_input).digest()).decode('utf8')
-		return HashResult(function_name='SHA2-224', bit_length=224, result_base64=result_base64, result_hex=result_hex)
+		return HashResult(plaintext=plaintext, function_name='SHA2-224', bit_length=224, result_base64=result_base64,
+		                  result_hex=result_hex)
 
 	@staticmethod
-	def calculate_sha256_result(hash_input: bytes):
+	def calculate_sha256_result(hash_input: str):
+		plaintext = hash_input
+		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha256(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha256(hash_input).digest()).decode('utf8')
-		return HashResult(function_name='SHA2-256', bit_length=256, result_base64=result_base64, result_hex=result_hex)
+		return HashResult(plaintext=plaintext, function_name='SHA2-256', bit_length=256, result_base64=result_base64,
+		                  result_hex=result_hex)
 
 	@staticmethod
-	def calculate_sha384_result(hash_input: bytes):
+	def calculate_sha384_result(hash_input: str):
+		plaintext = hash_input
+		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha384(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha384(hash_input).digest()).decode('utf8')
-		return HashResult(function_name='SHA2-384', bit_length=384, result_base64=result_base64, result_hex=result_hex)
+		return HashResult(plaintext=plaintext, function_name='SHA2-384', bit_length=384, result_base64=result_base64,
+		                  result_hex=result_hex)
 
 	@staticmethod
-	def calculate_sha512_result(hash_input: bytes):
+	def calculate_sha512_result(hash_input: str):
+		plaintext = hash_input
+		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha512(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha512(hash_input).digest()).decode('utf8')
-		return HashResult(function_name='SHA2-512', bit_length=512, result_base64=result_base64, result_hex=result_hex)
+		return HashResult(plaintext=plaintext, function_name='SHA2-512', bit_length=512, result_base64=result_base64,
+		                  result_hex=result_hex)
 
 
 class EncodeDecodeResult(models.Model):
