@@ -26,11 +26,11 @@ from apps.utils.int_to_bytes import int_to_bytes
 
 # Create your models here.
 class HashResult(models.Model):
-	plaintext = models.CharField(max_length=INPUT_MAX_LEN,db_index=True)
+	plaintext = models.TextField(max_length=INPUT_MAX_LEN, db_index=True)
 	function_name = models.CharField(max_length=50)
 	bit_length = models.IntegerField()
 	result_base64 = models.CharField(max_length=1024)
-	result_hex = models.CharField(max_length=1024)
+	result_hex = models.CharField(max_length=1024, db_index=True)
 
 	def __str__(self):
 		return "{}_{}_{}:{}".format(self.function_name, self.bit_length, self.plaintext, self.result_hex)
@@ -93,7 +93,7 @@ class HashResult(models.Model):
 class EncodeDecodeResult(models.Model):
 	algorithm = models.CharField(max_length=50)
 	is_encode = models.BooleanField()
-	result = models.CharField(max_length=200000)
+	result = models.TextField(max_length=50000)
 
 	def __str__(self):
 		return "{}_{}:{}".format(self.algorithm, 'Encode' if self.is_encode else 'Decode',
