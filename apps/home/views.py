@@ -27,7 +27,7 @@ def index(request, is_api=False):
 		context['is_fresh'] = True
 
 	# Hash
-	if 'hash_input' in request.POST:
+	if 'hash_input' in request.POST and "hash_action" in request.POST and request.POST["hash_action"] == 'Get Hash Result':
 		context['active_nav'] = 1
 		hash_input = request.POST['hash_input']
 		if len(hash_input) > INPUT_MAX_LEN:
@@ -52,6 +52,20 @@ def index(request, is_api=False):
 			context['sha256_result'].save()
 			context['sha384_result'].save()
 			context['sha512_result'].save()
+
+
+	# Hash Reverse Lookup
+	if 'hash_input' in request.POST and "hash_action" in request.POST and request.POST["hash_action"] == 'Reverse Lookup':
+		context['active_nav'] = 1
+		hash_input = request.POST['hash_input']
+		if len(hash_input) > INPUT_MAX_LEN:
+			context['is_bad_input'] = True
+			context['error_str'] = "Input too long"
+			return HttpResponse(html_template.render(context, request))
+
+		query_set = HashResult.objects.filter(result_hex=hash_input)
+		context['reverse_hash_result'] = [result.plaintext for result in query_set]
+		context['has_reverse_hash_result'] = False if len(context['reverse_hash_result']) == 0 else True
 
 	# Encode/Decode
 	if 'encode_or_decode' in request.POST:

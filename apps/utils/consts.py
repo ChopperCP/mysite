@@ -1,1 +1,10 @@
 INPUT_MAX_LEN = 10000
+
+HASH_FUNC_TO_BIT_LEN = {
+	"MD5"     : 128,
+	"SHA1"    : 160,
+	"SHA2-224": 224,
+	"SHA2-256": 256,
+	"SHA2-384": 384,
+	"SHA2-512": 512,
+}

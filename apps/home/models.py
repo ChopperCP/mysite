@@ -41,7 +41,8 @@ class HashResult(models.Model):
 		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.md5(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.md5(hash_input).digest()).decode('utf8')
-		return HashResult(plaintext=plaintext, function_name='MD5', bit_length=128, result_base64=result_base64,
+		return HashResult(plaintext=plaintext, function_name='MD5', bit_length=HASH_FUNC_TO_BIT_LEN['MD5'],
+		                  result_base64=result_base64,
 		                  result_hex=result_hex)
 
 	@staticmethod
@@ -50,7 +51,8 @@ class HashResult(models.Model):
 		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha1(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha1(hash_input).digest()).decode('utf8')
-		return HashResult(plaintext=plaintext, function_name='SHA1', bit_length=160, result_base64=result_base64,
+		return HashResult(plaintext=plaintext, function_name='SHA1', bit_length=HASH_FUNC_TO_BIT_LEN['SHA1'],
+		                  result_base64=result_base64,
 		                  result_hex=result_hex)
 
 	@staticmethod
@@ -59,7 +61,8 @@ class HashResult(models.Model):
 		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha224(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha224(hash_input).digest()).decode('utf8')
-		return HashResult(plaintext=plaintext, function_name='SHA2-224', bit_length=224, result_base64=result_base64,
+		return HashResult(plaintext=plaintext, function_name='SHA2-224', bit_length=HASH_FUNC_TO_BIT_LEN['SHA2-224'],
+		                  result_base64=result_base64,
 		                  result_hex=result_hex)
 
 	@staticmethod
@@ -68,7 +71,8 @@ class HashResult(models.Model):
 		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha256(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha256(hash_input).digest()).decode('utf8')
-		return HashResult(plaintext=plaintext, function_name='SHA2-256', bit_length=256, result_base64=result_base64,
+		return HashResult(plaintext=plaintext, function_name='SHA2-256', bit_length=HASH_FUNC_TO_BIT_LEN['SHA2-256'],
+		                  result_base64=result_base64,
 		                  result_hex=result_hex)
 
 	@staticmethod
@@ -77,7 +81,8 @@ class HashResult(models.Model):
 		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha384(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha384(hash_input).digest()).decode('utf8')
-		return HashResult(plaintext=plaintext, function_name='SHA2-384', bit_length=384, result_base64=result_base64,
+		return HashResult(plaintext=plaintext, function_name='SHA2-384', bit_length=HASH_FUNC_TO_BIT_LEN['SHA2-384'],
+		                  result_base64=result_base64,
 		                  result_hex=result_hex)
 
 	@staticmethod
@@ -86,7 +91,8 @@ class HashResult(models.Model):
 		hash_input = hash_input.encode('utf8')
 		result_base64 = binascii.b2a_base64(hashlib.sha512(hash_input).digest()).decode('utf8')
 		result_hex = binascii.b2a_hex(hashlib.sha512(hash_input).digest()).decode('utf8')
-		return HashResult(plaintext=plaintext, function_name='SHA2-512', bit_length=512, result_base64=result_base64,
+		return HashResult(plaintext=plaintext, function_name='SHA2-512', bit_length=HASH_FUNC_TO_BIT_LEN['SHA2-512'],
+		                  result_base64=result_base64,
 		                  result_hex=result_hex)
 
 
