@@ -24,7 +24,7 @@ def hash(request):
 	if not context['has_hash_result'] and not context['has_reverse_hash_result']:
 		return JsonResponse({}, json_dumps_params={'ensure_ascii': False})
 
-	if context['has_reverse_hash_result']:
+	if 'has_reverse_hash_result' in context and context['has_reverse_hash_result']:
 		return JsonResponse({'reverse_hash_result': context['reverse_hash_result']},
 		                    json_dumps_params={'ensure_ascii': False})
 
