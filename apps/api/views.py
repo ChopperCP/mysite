@@ -21,8 +21,12 @@ class Serializer(Builtin_Serializer):
 def hash(request):
 	context = index(request, is_api=True)
 
-	if 'has_hash_result' not in context or context['has_hash_result'] == False:
+	if not context['has_hash_result'] and not context['has_reverse_hash_result']:
 		return JsonResponse({}, json_dumps_params={'ensure_ascii': False})
+
+	if context['has_reverse_hash_result']:
+		return JsonResponse({'reverse_hash_result': context['reverse_hash_result']},
+		                    json_dumps_params={'ensure_ascii': False})
 
 	results = []
 	for value in context.values():

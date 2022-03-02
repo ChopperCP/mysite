@@ -22,6 +22,7 @@ def index(request, is_api=False):
 	html_template = loader.get_template('home/index.html')
 	context = {}
 	context['active_nav'] = 1  # by default, the first page is active
+	context['has_hash_result'] = False
 
 	if len(request.POST) == 0:
 		context['is_fresh'] = True
