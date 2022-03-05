@@ -20,8 +20,11 @@ import re
 import sys
 import itertools
 import string
+from pyasn1.codec.der import encoder
+from pyasn1.type.univ import Sequence, Integer
 
 from apps.utils.int_to_bytes import int_to_bytes
+from apps.utils.crypto import generate_prime, invert, PEM_TEMPLATE
 
 
 # Create your models here.
@@ -1797,3 +1800,46 @@ class EncodeDecodeResult(models.Model):
 		result = EncodeDecodeResult(algorithm="Punycode", is_encode=is_encode,
 		                            result=result)
 		return result
+
+
+class RSAKeyPair(models.Model):
+	p = models.TextField(max_length=2048)
+	q = models.TextField(max_length=2048)
+	n = models.TextField(max_length=2048)
+	e = models.TextField(max_length=2048)
+	phi = models.TextField(max_length=2048)
+	d = models.TextField(max_length=2048)
+
+	# fields required by RFC2313
+	dP = models.TextField(max_length=2048)
+	dQ = models.TextField(max_length=2048)
+	qInv = models.TextField(max_length=2048)
+
+	@staticmethod
+	def gen_rsa_keypair():
+		"""
+		Randomly generate a RSA key pair
+		Returns ( public key, private key )
+		"""
+		p = generate_prime(1024)
+		q = generate_prime(1024)
+		n = p * q
+		e = 65537  # 65537 is prime.
+
+		phi = (p - 1) * (q - 1)
+		d = invert(e, phi)
+
+		dP = d % (p - 1)
+		dQ = d % (q - 1)
+		qInv = invert(q, p)
+		return RSAKeyPair(p=p, q=q, n=n, e=e, phi=phi, d=d, dP=dP, dQ=dQ, qInv=qInv)
+
+	def to_pri_pem_bytes(self):
+		seq = Sequence()
+
+		for idx, x in enumerate(
+				[0, self.n, self.e, self.d, self.p, self.q, self.dP, self.dQ, self.qInv]
+		):
+			seq.setComponentByPosition(idx, Integer(x))
+
+		return PEM_TEMPLATE % base64.encodebytes(encoder.encode(seq))

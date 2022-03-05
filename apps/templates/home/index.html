@@ -39,6 +39,7 @@
                 </div>
             {% endif %}
 
+            {#            start of hash tab#}
             <div class="row justify-content-center">
                 <div class="col-12">
                     <!-- Tab Nav -->
@@ -61,7 +62,7 @@
                                 <a class="nav-link mb-sm-3 mb-md-0 {% if active_nav == 3 %}active{% endif %}"
                                    id="tabs-text-3-tab" data-bs-toggle="tab"
                                    href="#tabs-text-3" role="tab" aria-controls="tabs-text-3"
-                                   aria-selected="{% if active_nav == 3 %} true {% else %} false {% endif %}">Function3</a>
+                                   aria-selected="{% if active_nav == 3 %} true {% else %} false {% endif %}">RSA Key Generation</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link mb-sm-3 mb-md-0 {% if active_nav == 4 %}active{% endif %}"
@@ -368,18 +369,81 @@
                                 {#                                End of Decoder/Encoder#}
 
 
+                                {#                                start of RSA key generation#}
                                 <div class="tab-pane fade {% if active_nav == 3 %}show active{% endif %}"
                                      id="tabs-text-3" role="tabpanel"
                                      aria-labelledby="tabs-text-3-tab">
-                                    <p>Exercitation photo booth stumptown tote bag Banksy, elit small batch freegan sed.
-                                        Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident
-                                        chillwave deep v laborum. Aliquip veniam delectus,
-                                        Marfa eiusmod Pinterest in do umami readymade swag.</p>
-                                    <p>Day handsome addition horrible sensible goodness two contempt. Evening for
-                                        married
-                                        his account removal. Estimable me disposing of be moonlight cordially
-                                        curiosity.</p>
+
+                                 <div class="alert alert-info" role="alert">
+                                    Generating a RSA key (1024 bits) which involves generating big primes which may take some time... <br>
+                                     And Don't worry, this site will never store your keys (source code available)
                                 </div>
+
+                                    <form action="{% url 'index' %}" method="post" id="gen_rsa_key_form">
+                                        {% csrf_token %}
+                                        <div class="mt-3 input-group">
+                                            <input type="submit" name="gen_rsa_key" class="btn btn-primary"
+                                                   value="Generate RSA key" aria-label="Check"
+                                                   aria-describedby="check-icon">
+                                            <span class="input-group-text btn btn-primary" id="check-icon"><span
+                                                    class="fas fa-check"></span></span>
+                                        </div>
+                                    </form>
+
+                                    {% if has_rsa_key_result == True %}
+                                    <form action="{% url 'index' %}" method="post" id="gen_rsa_key_form">
+                                        {% csrf_token %}
+                                        <div class="mt-3 input-group">
+                                            <input type="submit" name="download_rsa_key_file" class="btn btn-primary"
+                                                   value="Download Key File(PEM)" aria-label="Check"
+                                                   aria-describedby="check-icon">
+                                            <span class="input-group-text btn btn-primary" id="check-icon"><span
+                                                    class="fas fa-download"></span></span>
+                                        </div>
+                                    </form>
+                                    <table class="table table-hover mt-3"
+                                               style="table-layout:fixed;over-flow:break-word;">
+                                            <tr>
+                                                <th scope="col" id="field">Field</th>
+                                                <th scope="col" id="value">Value</th>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" id="p"
+                                                    rowspan="1">p</th>
+                                                <td headers="p value">{{ rsa_key_pair.p }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" id="p"
+                                                    rowspan="1">q</th>
+                                                <td headers="p value">{{ rsa_key_pair.q }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" id="p"
+                                                    rowspan="1">n</th>
+                                                <td headers="p value">{{ rsa_key_pair.n }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" id="p"
+                                                    rowspan="1">e</th>
+                                                <td headers="p value">{{ rsa_key_pair.e }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" id="p"
+                                                    rowspan="1">φ</th>
+                                                <td headers="p value">{{ rsa_key_pair.phi }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" id="p"
+                                                    rowspan="1">d</th>
+                                                <td headers="p value">{{ rsa_key_pair.d }}</td>
+                                            </tr>
+                                    </table>
+                                    {% endif %}
+                                </div>
+                                {#                                end of RSA key generation#}
+
+
+
                                 <div class="tab-pane fade {% if active_nav == 4 %}show active{% endif %}"
                                      id="tabs-text-4" role="tabpanel"
                                      aria-labelledby="tabs-text-4-tab">

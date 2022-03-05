@@ -6,12 +6,13 @@ import logging
 
 from django import template
 from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import loader
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
-from apps.home.models import HashResult, EncodeDecodeResult
+from apps.home.models import HashResult, EncodeDecodeResult, RSAKeyPair
 from apps.utils.consts import *
 
 import hashlib
@@ -23,12 +24,14 @@ def index(request, is_api=False):
 	context = {}
 	context['active_nav'] = 1  # by default, the first page is active
 	context['has_hash_result'] = False
+	context['has_rsa_key_result'] = False
 
 	if len(request.POST) == 0:
 		context['is_fresh'] = True
 
 	# Hash
-	if 'hash_input' in request.POST and "hash_action" in request.POST and request.POST["hash_action"] == 'Get Hash Result':
+	if 'hash_input' in request.POST and "hash_action" in request.POST and request.POST[
+		"hash_action"] == 'Get Hash Result':
 		context['active_nav'] = 1
 		hash_input = request.POST['hash_input']
 		if len(hash_input) > INPUT_MAX_LEN:
@@ -54,9 +57,9 @@ def index(request, is_api=False):
 			context['sha384_result'].save()
 			context['sha512_result'].save()
 
-
 	# Hash Reverse Lookup
-	if 'hash_input' in request.POST and "hash_action" in request.POST and request.POST["hash_action"] == 'Reverse Lookup':
+	if 'hash_input' in request.POST and "hash_action" in request.POST and request.POST[
+		"hash_action"] == 'Reverse Lookup':
 		context['active_nav'] = 1
 		hash_input = request.POST['hash_input']
 		if len(hash_input) > INPUT_MAX_LEN:
@@ -169,6 +172,25 @@ def index(request, is_api=False):
 				if is_api:
 					return context
 				return HttpResponse(html_template.render(context, request))
+
+	# Generate a RSA key
+	if 'gen_rsa_key' in request.POST or 'gen_rsa_key' in request.GET:
+		context['active_nav'] = 3
+		context['rsa_key_pair'] = RSAKeyPair.gen_rsa_keypair()
+		context['has_rsa_key_result'] = True
+
+		response = HttpResponse(html_template.render(context, request))
+		response.set_cookie('rsa_key_file', context['rsa_key_pair'].to_pri_pem_bytes().decode(
+			'utf8'))  # key data will never enter a database
+		return response
+
+	# Download RSA key file (PEM format)
+	if 'download_rsa_key_file' in request.POST:
+		file_to_send = ContentFile(request.COOKIES['rsa_key_file'])
+		response = HttpResponse(file_to_send, 'application/x-gzip')
+		response['Content-Length'] = file_to_send.size
+		response['Content-Disposition'] = 'attachment; filename="key.pem"'
+		return response
 
 	if is_api:
 		return context
