@@ -28,8 +28,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.home',  # Home/Index Page
-    'apps.api',
+    'apps.home',    # Home/Index Page
+    'apps.api',     # API support
+    'apps.proxy',     # HTTP proxy
 ]
 
 MIDDLEWARE = [

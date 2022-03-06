@@ -8,7 +8,8 @@ from django.urls import path, include  # add this
 
 urlpatterns = [
 	path('admin/', admin.site.urls),  # Django admin route
-	path("api/", include("apps.api.urls")),
-	path("", include("apps.home.urls")),  # UI Kits Html files
+	path("api/", include("apps.api.urls")),  # API support
+	path("proxy/", include("apps.proxy.urls")),  # HTTP proxy
 	path("login/", include("apps.authentication.urls")),  # Auth routes - login / register
+	path("", include("apps.home.urls")),  # UI Kits Html files
 ]
