@@ -3,6 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 import logging
+import re
 
 from django import template
 from django.contrib.auth.decorators import login_required
@@ -12,7 +13,7 @@ from django.template import loader
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
-from apps.home.models import HashResult, EncodeDecodeResult, RSAKeyPair
+from apps.home.models import HashResult, EncodeDecodeResult, RSAKeyPair, IPLookupResult
 from apps.utils.consts import *
 
 import hashlib
@@ -191,6 +192,19 @@ def index(request, is_api=False):
 		response['Content-Length'] = file_to_send.size
 		response['Content-Disposition'] = 'attachment; filename="key.pem"'
 		return response
+
+	if 'ip' in request.POST and request.POST['ip'] != 0:
+		ip = request.POST['ip']
+		re_result = re.search(r"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",ip)
+		if re_result is None or re_result.group() != ip:
+			context['is_bad_input'] = True
+			context['error_str'] = "Invalid IP"
+			if is_api:
+				return context
+			return HttpResponse(html_template.render(context, request))
+		context['active_nav'] = 4
+		context['ip_to_domain_result'] = IPLookupResult.get_ip_lookup_result(ip).domains.split('\n')
+		context['has_ip_to_domain_result'] = True if len(context['ip_to_domain_result']) != 0 else False
 
 	if is_api:
 		return context

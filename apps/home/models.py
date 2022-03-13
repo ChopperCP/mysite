@@ -2,13 +2,10 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
-import logging
+from typing import Set
 
-from django.db import models
-from django.contrib.auth.models import User
-from apps.utils.consts import *
-
-import json
+import time
+import requests
 import hashlib
 import binascii
 import base64
@@ -22,9 +19,16 @@ import itertools
 import string
 from pyasn1.codec.der import encoder
 from pyasn1.type.univ import Sequence, Integer
+from fake_useragent import UserAgent
 
+from django.db import models
+from django.contrib.auth.models import User
+
+from apps.utils.consts import *
 from apps.utils.int_to_bytes import int_to_bytes
 from apps.utils.crypto import generate_prime, invert, PEM_TEMPLATE
+
+ua = UserAgent()
 
 
 # Create your models here.
@@ -1843,3 +1847,77 @@ class RSAKeyPair(models.Model):
 			seq.setComponentByPosition(idx, Integer(x))
 
 		return PEM_TEMPLATE % base64.encodebytes(encoder.encode(seq))
+
+
+class IPLookupResult(models.Model):
+	ip = models.CharField(max_length=100)
+	domains = models.TextField(max_length=20000)  # each domain is seperated by '\n'
+
+	# ip138
+	headers_ip138 = {
+		'Host'           : 'site.ip138.com',
+		'User-Agent'     : ua.random,
+		'Accept'         : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+		'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+		'Accept-Encoding': 'gzip, deflate, br',
+		'Referer'        : 'https://site.ip138.com/'}
+	# 爱站
+	headers_aizhan = {
+		'Host'           : 'dns.aizhan.com',
+		'User-Agent'     : ua.random,
+		'Accept'         : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+		'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+		'Accept-Encoding': 'gzip, deflate, br',
+		'Referer'        : 'https://dns.aizhan.com/'}
+
+	@staticmethod
+	def ip138_spider(ip) -> Set:
+		ip138_url = 'https://site.ip138.com/' + str(ip) + '/'
+		ip138_r = requests.get(url=ip138_url, headers=IPLookupResult.headers_ip138, timeout=3).text
+		ip138_address = re.findall(r"<h3>(.*?)</h3>", ip138_r)  # 归属地
+		# result = re.findall(r"<li>(.*?)</li>", ip138_r)
+		if '<li>暂无结果</li>' in ip138_r:
+			return set()
+		else:
+			# print('[+]ip:{}'.format(ip))
+			# print('归属地：{}'.format(ip138_address[0]))
+			# result_time = re.findall(r"""class="date">(.*?)</span>""", ip138_r)  # 绑定时间
+			return set(re.findall(r"""</span><a href="/(.*?)/" target="_blank">""", ip138_r))  # 绑定域名结果
+
+	@staticmethod
+	def aizhan_spider(ip) -> Set:
+		aizhan_url = 'https://dns.aizhan.com/' + str(ip) + '/'
+		aizhan_r = requests.get(url=aizhan_url, headers=IPLookupResult.headers_aizhan, timeout=3).text
+		#  1. 取出该地址的真实地址
+		aizhan_address = re.findall(r'''<strong>(.*?)</strong>''', aizhan_r)
+		#  2. 取出该ip的解析过多少个域名
+		aizhan_nums = re.findall(r'''<span class="red">(.*?)</span>''', aizhan_r)
+		aizhan_domains = set()
+		if len(aizhan_nums) != 0 and int(aizhan_nums[0]) > 0:
+			if int(aizhan_nums[0]) > 20:
+				# 计算多少页
+				pages = (int(aizhan_nums[0]) % 20) + (int(aizhan_nums[0]) // 20)
+
+				for page in range(1, pages + 1):
+					aizhan_page_url = aizhan_url + str(page) + '/'
+					# print(aizhan_page_url)
+					aizhan_page_r = requests.get(url=aizhan_page_url, headers=IPLookupResult.headers_aizhan,
+					                             timeout=3).text
+					# 取出该ip曾经解析过多少个域名
+					for domain in re.findall(r'''rel="nofollow" target="_blank">(.*?)</a>''', aizhan_page_r):
+						aizhan_domains.add(domain)
+					time.sleep(0.5)
+			else:
+				# 取出该ip曾经解析过多少个域名
+				aizhan_domains = set(re.findall(r'''rel="nofollow" target="_blank">(.*?)</a>''', aizhan_r))
+				for aizhan_domain in aizhan_domains:
+					print(aizhan_domain)
+
+		return aizhan_domains
+
+	@staticmethod
+	def get_ip_lookup_result(ip: str):
+		ip138_result = IPLookupResult.ip138_spider(ip)
+		aizhan_result = IPLookupResult.aizhan_spider(ip)
+		total_result = ip138_result.union(aizhan_result)
+		return IPLookupResult(ip=ip, domains='\n'.join(total_result))

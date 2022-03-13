@@ -68,7 +68,7 @@
                                 <a class="nav-link mb-sm-3 mb-md-0 {% if active_nav == 4 %}active{% endif %}"
                                    id="tabs-text-4-tab" data-bs-toggle="tab"
                                    href="#tabs-text-4" role="tab" aria-controls="tabs-text-4"
-                                   aria-selected="{% if active_nav == 4 %} true {% else %} false {% endif %}">Function4</a>
+                                   aria-selected="{% if active_nav == 4 %} true {% else %} false {% endif %}">IP to Domain Lookup</a>
                             </li>
                         </ul>
                     </div>
@@ -443,19 +443,43 @@
                                 {#                                end of RSA key generation#}
 
 
-
+                                {#                                start of IP to Domain lookup#}
                                 <div class="tab-pane fade {% if active_nav == 4 %}show active{% endif %}"
                                      id="tabs-text-4" role="tabpanel"
                                      aria-labelledby="tabs-text-4-tab">
-                                    <p>Exercitation photo booth stumptown tote bag Banksy, elit small batch freegan sed.
-                                        Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident
-                                        chillwave deep v laborum. Aliquip veniam delectus,
-                                        Marfa eiusmod Pinterest in do umami readymade swag.</p>
-                                    <p>Day handsome addition horrible sensible goodness two contempt. Evening for
-                                        married
-                                        his account removal. Estimable me disposing of be moonlight cordially
-                                        curiosity.</p>
+
+
+                                    <form action="{% url 'index' %}" method="post" id="hash_form">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="IPToDomainLookup">IP</label>
+                                            <input name="ip" type="text" class="form-control" id="IPToDomainLookup">
+                                        </div>
+
+                                        <div class="mt-3 input-group">
+                                            <input type="submit" name="ip-to-domain-lookup" class="btn btn-primary"
+                                                   value="IP Lookup" aria-label="Search"
+                                                   aria-describedby="search-icon">
+                                            <span class="input-group-text btn btn-primary" id="search-icon"><span
+                                                    class="fas fa-search"></span></span>
+                                        </div>
+                                    </form>
+
+                                    <div class="mt-3">
+                                        {% if has_ip_to_domain_result == False %}
+                                            <div class="alert alert-danger" role="alert" id="encode_decode_output">
+                                                No results found!
+                                            </div>
+                                        {% elif has_ip_to_domain_result == True %}
+                                            <div class="alert alert-info" role="alert" id="encode_decode_output">
+                                                {% for result in ip_to_domain_result %}
+                                                    {{ result | linebreaksbr}}<br>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
+                                {#                                end of IP to Domain lookup#}
                             </div>
                         </div>
                     </div>
