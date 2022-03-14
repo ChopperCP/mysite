@@ -10,4 +10,6 @@ from apps.api import views
 urlpatterns = [
     path('hash', views.hash, name='hash'),
     path('encode_decode', views.encode_decode, name='encode_decode'),
+    path('gen_rsa_key', views.gen_rsa_key, name='gen_rsa_key'),
+    path('ip_lookup', views.ip_lookup, name='ip_lookup'),
 ]

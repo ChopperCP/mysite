@@ -1,9 +1,11 @@
+import json
+
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.core import serializers
 
 # Create your views here.
-from apps.home.models import HashResult, EncodeDecodeResult
+from apps.home.models import HashResult, EncodeDecodeResult, RSAKeyPair
 from apps.home.views import index
 from django.views.decorators.csrf import csrf_exempt
 
@@ -47,3 +49,20 @@ def encode_decode(request):
 			serializer = Serializer()
 			serialized = serializer.serialize((value,))
 			return HttpResponse(serialized)
+
+
+@csrf_exempt
+def gen_rsa_key(request):
+	context = {}
+	serializer = Serializer()
+	key_pair_obj=RSAKeyPair.gen_rsa_keypair()
+	context['rsa_key_pair'] = json.loads(serializer.serialize((key_pair_obj,)))[0]
+	context['has_rsa_key_result'] = True
+	context['rsa_key_file'] = key_pair_obj.to_pri_pem_bytes().decode('utf8')
+
+	return JsonResponse(context)
+
+@csrf_exempt
+def ip_lookup(request):
+	context = index(request, is_api=True)
+	return JsonResponse(context)

@@ -175,14 +175,14 @@ def index(request, is_api=False):
 				return HttpResponse(html_template.render(context, request))
 
 	# Generate a RSA key
-	if 'gen_rsa_key' in request.POST or 'gen_rsa_key' in request.GET:
+	if 'gen_rsa_key' in request.POST:
 		context['active_nav'] = 3
 		context['rsa_key_pair'] = RSAKeyPair.gen_rsa_keypair()
 		context['has_rsa_key_result'] = True
 
 		response = HttpResponse(html_template.render(context, request))
 		response.set_cookie('rsa_key_file', context['rsa_key_pair'].to_pri_pem_bytes().decode(
-			'utf8'))  # key data will never enter a database
+			'utf8'),max_age=300)  # key data will never enter a database
 		return response
 
 	# Download RSA key file (PEM format)
@@ -193,7 +193,9 @@ def index(request, is_api=False):
 		response['Content-Disposition'] = 'attachment; filename="key.pem"'
 		return response
 
-	if 'ip' in request.POST and request.POST['ip'] != 0:
+	# IP to domain lookup
+	if 'ip' in request.POST and len(request.POST['ip']) != 0:
+		context['active_nav'] = 4
 		ip = request.POST['ip']
 		re_result = re.search(r"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",ip)
 		if re_result is None or re_result.group() != ip:
@@ -202,7 +204,6 @@ def index(request, is_api=False):
 			if is_api:
 				return context
 			return HttpResponse(html_template.render(context, request))
-		context['active_nav'] = 4
 		context['ip_to_domain_result'] = IPLookupResult.get_ip_lookup_result(ip).domains.split('\n')
 		context['has_ip_to_domain_result'] = True if len(context['ip_to_domain_result']) != 0 else False
 

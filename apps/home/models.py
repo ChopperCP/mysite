@@ -1920,4 +1920,5 @@ class IPLookupResult(models.Model):
 		ip138_result = IPLookupResult.ip138_spider(ip)
 		aizhan_result = IPLookupResult.aizhan_spider(ip)
 		total_result = ip138_result.union(aizhan_result)
+		total_result.remove("-")
 		return IPLookupResult(ip=ip, domains='\n'.join(total_result))

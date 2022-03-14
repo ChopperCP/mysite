@@ -1,4 +1,4 @@
-﻿# Mysite
+# Mysite
 
 毕业设计——网站前后端开发 <br>
 指导老师：陈双平
@@ -122,6 +122,44 @@ Testing (Windows Powershell) <br>
     $Resp = Invoke-WebRequest -Uri $Uri -Method Post -Body $Form
     $Resp.Content
 
+### RSA 密钥对生成
+    Method: GET
+    URI: /api/gen_rsa_key
+    
+    Parameters:
+        None
+
+Testing (Windows Powershell) <br>
+
+    $Uri = "http://localhost:8000/api/gen_rsa_key"
+    $Resp = Invoke-WebRequest -Uri $Uri -Method Get
+    $Resp.Content
+
+### 域名反查
+    Method: POST
+    URI: /api/ip_lookup
+    
+    Parameters:
+        ip
+            type: str
+            Note: 要查询的IP
+
+Testing (Windows Powershell) <br>
+
+    $Uri = "http://localhost:8000/api/ip_lookup"
+    $Form = @{
+    ip = '220.181.38.148'
+    }
+    $Resp = Invoke-WebRequest -Uri $Uri -Method Post -Body $Form
+    $Resp.Content
+
+### 代理服务
+    Method: GET/POST
+    URI: /proxy/<URL>
+    
+    Parameters:
+        The parameters you want to send to the target URL
+
 # 组件
 
 ## 后端
@@ -136,7 +174,7 @@ HTML+Javascript+CSS
 
 # TODO
 - [ ] 解耦
-- [ ] API文档（前端）
+- [ ] ~~API文档（前端）~~
 - [ ] 前端美化
 - [x] 大素数生成
 - [x] 域名反查
