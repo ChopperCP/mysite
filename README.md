@@ -61,7 +61,7 @@
 
 Testing (Windows Powershell) <br>
 
-    $Uri = 'http://localhost:8000/api/hash'
+    $Uri = 'http://localhost:8888/api/hash'
     $Form = @{
     hash_input = 'asdf'
     hash_action = 'Get Hash Result'
@@ -86,7 +86,7 @@ Testing (Windows Powershell) <br>
 
 Testing (Windows Powershell) <br>
 
-    $Uri = 'http://localhost:8000/api/hash'
+    $Uri = 'http://localhost:8888/api/hash'
     $Form = @{
     hash_input = '912ec803b2ce49e4a541068d495ab570'
     hash_action = 'Reverse Lookup'
@@ -113,7 +113,7 @@ Testing (Windows Powershell) <br>
 
 Testing (Windows Powershell) <br>
 
-    $Uri = "http://localhost:8000/api/encode_decode"
+    $Uri = "http://localhost:8888/api/encode_decode"
     $Form = @{
     encode_decode_input = '912ec803b2ce49e4a541068d495ab570'
     encode_or_decode = 'Encode'
@@ -131,7 +131,7 @@ Testing (Windows Powershell) <br>
 
 Testing (Windows Powershell) <br>
 
-    $Uri = "http://localhost:8000/api/gen_rsa_key"
+    $Uri = "http://localhost:8888/api/gen_rsa_key"
     $Resp = Invoke-WebRequest -Uri $Uri -Method Get
     $Resp.Content
 
@@ -146,7 +146,7 @@ Testing (Windows Powershell) <br>
 
 Testing (Windows Powershell) <br>
 
-    $Uri = "http://localhost:8000/api/ip_lookup"
+    $Uri = "http://localhost:8888/api/ip_lookup"
     $Form = @{
     ip = '220.181.38.148'
     }

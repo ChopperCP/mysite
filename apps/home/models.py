@@ -28,8 +28,6 @@ from apps.utils.consts import *
 from apps.utils.int_to_bytes import int_to_bytes
 from apps.utils.crypto import generate_prime, invert, PEM_TEMPLATE
 
-ua = UserAgent()
-
 
 # Create your models here.
 class HashResult(models.Model):
@@ -1856,7 +1854,7 @@ class IPLookupResult(models.Model):
 	# ip138
 	headers_ip138 = {
 		'Host'           : 'site.ip138.com',
-		'User-Agent'     : ua.random,
+		'User-Agent'     : UserAgent().random,
 		'Accept'         : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 		'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
 		'Accept-Encoding': 'gzip, deflate, br',
@@ -1864,7 +1862,7 @@ class IPLookupResult(models.Model):
 	# 爱站
 	headers_aizhan = {
 		'Host'           : 'dns.aizhan.com',
-		'User-Agent'     : ua.random,
+		'User-Agent'     : UserAgent().random,
 		'Accept'         : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 		'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
 		'Accept-Encoding': 'gzip, deflate, br',
