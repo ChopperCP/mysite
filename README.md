@@ -173,7 +173,7 @@ HTML+Javascript+CSS
 主题：Pixel https://appseed.us/django/django-pixel-bootstrap-uikit
 
 # TODO
-- [ ] 解耦
+- [x] 解耦
 - [ ] ~~API文档（前端）~~
 - [ ] 前端美化
 - [x] 大素数生成
