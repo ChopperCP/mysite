@@ -1919,4 +1919,5 @@ class IPLookupResult(models.Model):
 		aizhan_result = IPLookupResult.aizhan_spider(ip)
 		total_result = ip138_result.union(aizhan_result)
 		total_result.discard("-")
-		return IPLookupResult(ip=ip, domains='\n'.join(total_result))
+		total_result.discard("")
+		return IPLookupResult(ip=ip, domains=list(total_result))

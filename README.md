@@ -17,9 +17,6 @@
 * SHA-2-384
 * SHA-2-512
 
-## Hash查询（Reverse-Lookup）
-前端&API 支持
-
 ## 编码/解码
 
 ### Base
@@ -44,6 +41,25 @@
 * JSFuck
 * Brainfuck
 * 社会主义核心价值观
+
+## RSA密钥对生成
+
+前端支持  
+API支持
+
+## 域名反查
+
+前端支持  
+API支持
+
+## Hash查询（Reverse-Lookup）
+
+前端支持  
+API支持
+
+## HTTP代理
+
+API支持
 
 ## API
 ### Hash 计算
@@ -179,4 +195,5 @@ HTML+Javascript+CSS
 - [x] 大素数生成
 - [x] 域名反查
 - [x] 代理服务
+- [ ] 上线
 

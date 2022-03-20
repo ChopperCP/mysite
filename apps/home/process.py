@@ -160,6 +160,6 @@ def ip_lookup(request) -> Dict:
 		context['is_bad_input'] = True
 		context['error_str'] = "Invalid IP"
 		raise InputException(context)
-	context['ip_to_domain_result'] = IPLookupResult.get_ip_lookup_result(ip).domains.split('\n')
+	context['ip_to_domain_result'] = IPLookupResult.get_ip_lookup_result(ip).domains
 	context['has_ip_to_domain_result'] = True if len(context['ip_to_domain_result']) != 0 else False
 	return context
