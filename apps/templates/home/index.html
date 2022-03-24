@@ -21,16 +21,44 @@
 </head>
 
 
-<body>
+<body class="bg-secondary text-white">
 {#    {% include 'includes/navigation.html' %}#}
 <main>
 
     {% if is_fresh %}
         {% include 'includes/preloader.html' %}
     {% endif %}
-    <!-- Tab Section -->
-    <div class="section section-lg">
-        <div class="container">
+    <div class="position-relative">
+        <ul class="nav pagination pagination-lg flex-column flex-md-row" id="tabs-text" role="tablist">
+            <li class="page-item col-3">
+                <a class="page-link mb-sm-3 mb-md-0 border-0 {% if active_nav == 1 %}active{% endif %}"
+                   id="tabs-text-1-tab" data-bs-toggle="tab"
+                   href="#tabs-text-1" role="tab" aria-controls="tabs-text-1"
+                   aria-selected="{% if active_nav == 1 %} true {% else %} false {% endif %}">Hash
+                    Calculator</a>
+            </li>
+            <li class="page-item col-3">
+                <a class="page-link mb-sm-3 mb-md-0 border-0 {% if active_nav == 2 %}active{% endif %}"
+                   id="tabs-text-2-tab" data-bs-toggle="tab"
+                   href="#tabs-text-2" role="tab" aria-controls="tabs-text-2"
+                   aria-selected="{% if active_nav == 2 %} true {% else %} false {% endif %}">Encode/Decoder</a>
+            </li>
+            <li class="page-item col-3">
+                <a class="page-link mb-sm-3 mb-md-0 border-0 {% if active_nav == 3 %}active{% endif %}"
+                   id="tabs-text-3-tab" data-bs-toggle="tab"
+                   href="#tabs-text-3" role="tab" aria-controls="tabs-text-3"
+                   aria-selected="{% if active_nav == 3 %} true {% else %} false {% endif %}">RSA Key Generation</a>
+            </li>
+            <li class="page-item col-3">
+                <a class="page-link mb-sm-3 mb-md-0 border-0 {% if active_nav == 4 %}active{% endif %}"
+                   id="tabs-text-4-tab" data-bs-toggle="tab"
+                   href="#tabs-text-4" role="tab" aria-controls="tabs-text-4"
+                   aria-selected="{% if active_nav == 4 %} true {% else %} false {% endif %}">IP to Domain Lookup</a>
+            </li>
+        </ul>
+    </div>
+    <div class="section section-xxl">
+        <div class="container bg-secondary">
             {% if is_bad_input %}
                 <div class="row justify-content-center">
                     <div class="col-12">
@@ -43,39 +71,10 @@
             <div class="row justify-content-center">
                 <div class="col-12">
                     <!-- Tab Nav -->
-                    <div class="nav-wrapper position-relative mb-2">
-                        <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link mb-sm-3 mb-md-0 {% if active_nav == 1 %}active{% endif %}"
-                                   id="tabs-text-1-tab" data-bs-toggle="tab"
-                                   href="#tabs-text-1" role="tab" aria-controls="tabs-text-1"
-                                   aria-selected="{% if active_nav == 1 %} true {% else %} false {% endif %}">Hash
-                                    Calculator</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link mb-sm-3 mb-md-0 {% if active_nav == 2 %}active{% endif %}"
-                                   id="tabs-text-2-tab" data-bs-toggle="tab"
-                                   href="#tabs-text-2" role="tab" aria-controls="tabs-text-2"
-                                   aria-selected="{% if active_nav == 2 %} true {% else %} false {% endif %}">Encode/Decoder</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link mb-sm-3 mb-md-0 {% if active_nav == 3 %}active{% endif %}"
-                                   id="tabs-text-3-tab" data-bs-toggle="tab"
-                                   href="#tabs-text-3" role="tab" aria-controls="tabs-text-3"
-                                   aria-selected="{% if active_nav == 3 %} true {% else %} false {% endif %}">RSA Key Generation</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link mb-sm-3 mb-md-0 {% if active_nav == 4 %}active{% endif %}"
-                                   id="tabs-text-4-tab" data-bs-toggle="tab"
-                                   href="#tabs-text-4" role="tab" aria-controls="tabs-text-4"
-                                   aria-selected="{% if active_nav == 4 %} true {% else %} false {% endif %}">IP to Domain Lookup</a>
-                            </li>
-                        </ul>
-                    </div>
                     <!-- End of Tab Nav -->
                     <!-- Tab Content -->
                     <div class="card border-0">
-                        <div class="card-body p-0">
+                        <div class="card-body p-0 bg-secondary">
                             <div class="tab-content" id="tabcontent1">
                                 {#                                Hash table pane#}
                                 <div class="tab-pane fade {% if active_nav == 1 %}show active{% endif %}"
@@ -224,7 +223,7 @@
                                                     <span class="fas fa-angle-down dropdown-arrow"></span>
                                                     <span class="sr-only">Toggle Dropdown</span>
                                                 </button>
-                                                <div class="dropdown-menu py-0">
+                                                <div class="dropdown-menu py-0 bg-secondary">
                                                     <a class="dropdown-item rounded-top" onclick="select_encode()">
                                                         Encode
                                                     </a>
@@ -238,9 +237,9 @@
                                         {#                                        select encode/decode algorithm#}
                                         <div class="mt-3">
                                             <h3>Encode/Decode Algorithms</h3>
-                                            <div class="container mt-3">
+                                            <div class="container mt-3 p-3">
                                                 <div class="row">
-                                                    <div class="col mb-5 alert-success">
+                                                    <div class="col mb-5 bg-primary">
                                                         <h5 class="mt-3">Base</h5>
                                                         <input type="submit" class="btn btn-success mb-3"
                                                                name="encode_decode_algorithm" value="Base16">
@@ -252,7 +251,7 @@
                                                                name="encode_decode_algorithm" value="Base85">
                                                     </div>
 
-                                                    <div class="col mb-5 alert-info">
+                                                    <div class="col mb-5 bg-primary">
                                                         <h5 class="mt-3">Standard</h5>
                                                         <input type="submit" class="btn btn-info mb-3"
                                                                name="encode_decode_algorithm" value="Hex">
@@ -266,7 +265,7 @@
                                                                name="encode_decode_algorithm" value="Punycode">
                                                     </div>
 
-                                                    <div class="col mb-5 alert-warning">
+                                                    <div class="col mb-5 bg-primary">
                                                         <h5 class="mt-3">Misc</h5>
                                                         <input type="submit" class="btn btn-warning mb-3"
                                                                name="encode_decode_algorithm" value="UUencode">
@@ -304,65 +303,63 @@
                                         <div>
                                             <h3>Result</h3>
                                         </div>
-                                        <div class="container">
-                                            <div class="row">
-                                                <div class="alert alert-info" role="alert" id="encode_decode_output"
-                                                     onload="aadecode()">
-                                                    {% if encode_decode_result.algorithm == "AAencode" and encode_decode_result.is_encode == False %}
-                                                        <script>
-                                                            let setInnerHTML = function (elm, html) {
-                                                                elm.innerHTML = html;
-                                                                Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
-                                                                    const newScript = document.createElement("script");
-                                                                    Array.from(oldScript.attributes)
-                                                                        .forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                                                                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                                                                    oldScript.parentNode.replaceChild(newScript, oldScript);
-                                                                });
-                                                            };
+                                        <div class="row">
+                                            <div class="alert alert-info" role="alert" id="encode_decode_output"
+                                                 onload="aadecode()">
+                                                {% if encode_decode_result.algorithm == "AAencode" and encode_decode_result.is_encode == False %}
+                                                    <script>
+                                                        let setInnerHTML = function (elm, html) {
+                                                            elm.innerHTML = html;
+                                                            Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
+                                                                const newScript = document.createElement("script");
+                                                                Array.from(oldScript.attributes)
+                                                                    .forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                                                                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                                                                oldScript.parentNode.replaceChild(newScript, oldScript);
+                                                            });
+                                                        };
 
-                                                            function aadecode() {
-                                                                text = document.getElementById("encode_decode_input").innerHTML;
-                                                                let evalPreamble = "(\uFF9F\u0414\uFF9F) ['_'] ( (\uFF9F\u0414\uFF9F) ['_'] (";
-                                                                let decodePreamble = "( (\uFF9F\u0414\uFF9F) ['_'] (";
-                                                                let evalPostamble = ") (\uFF9F\u0398\uFF9F)) ('_');";
-                                                                let decodePostamble = ") ());";
+                                                        function aadecode() {
+                                                            text = document.getElementById("encode_decode_input").innerHTML;
+                                                            let evalPreamble = "(\uFF9F\u0414\uFF9F) ['_'] ( (\uFF9F\u0414\uFF9F) ['_'] (";
+                                                            let decodePreamble = "( (\uFF9F\u0414\uFF9F) ['_'] (";
+                                                            let evalPostamble = ") (\uFF9F\u0398\uFF9F)) ('_');";
+                                                            let decodePostamble = ") ());";
 
-                                                                // strip beginning/ending space.
-                                                                text = text.replace(/^\s*/, "").replace(/\s*$/, "");
+                                                            // strip beginning/ending space.
+                                                            text = text.replace(/^\s*/, "").replace(/\s*$/, "");
 
-                                                                // returns empty text for empty input.
-                                                                if (/^\s*$/.test(text)) {
-                                                                    return "";
-                                                                }
-                                                                // check if it is encoded.
-                                                                if (text.lastIndexOf(evalPreamble) < 0) {
-                                                                    throw new Error("Given code is not encoded as aaencode.");
-                                                                }
-                                                                if (text.lastIndexOf(evalPostamble) !== text.length - evalPostamble.length) {
-                                                                    throw new Error("Given code is not encoded as aaencode.");
-                                                                }
-
-                                                                let decodingScript = text.replace(evalPreamble, decodePreamble).replace(evalPostamble, decodePostamble);
-                                                                console.log(eval(decodingScript));
-                                                                setInnerHTML(document.getElementById("encode_decode_output"), eval(decodingScript));
+                                                            // returns empty text for empty input.
+                                                            if (/^\s*$/.test(text)) {
+                                                                return "";
+                                                            }
+                                                            // check if it is encoded.
+                                                            if (text.lastIndexOf(evalPreamble) < 0) {
+                                                                throw new Error("Given code is not encoded as aaencode.");
+                                                            }
+                                                            if (text.lastIndexOf(evalPostamble) !== text.length - evalPostamble.length) {
+                                                                throw new Error("Given code is not encoded as aaencode.");
                                                             }
 
-                                                            {#auto execute when page is loaded#}
-                                                            window.onload = aadecode();
-                                                        </script>
-                                                    {% else %}
-                                                        {{ encode_decode_result.result|linebreaksbr }}
-                                                    {% endif %}
-                                                </div>
+                                                            let decodingScript = text.replace(evalPreamble, decodePreamble).replace(evalPostamble, decodePostamble);
+                                                            console.log(eval(decodingScript));
+                                                            setInnerHTML(document.getElementById("encode_decode_output"), eval(decodingScript));
+                                                        }
+
+                                                        {#auto execute when page is loaded#}
+                                                        window.onload = aadecode();
+                                                    </script>
+                                                {% else %}
+                                                    {{ encode_decode_result.result|linebreaksbr }}
+                                                {% endif %}
                                             </div>
-                                            <div class="row">
-                                                <button class="btn btn-primary" type="button"
-                                                        onclick="replace_input_from_output()">
-                                                    Replace Input
-                                                    <span><span class="fas fa-arrow-up"></span></span>
-                                                </button>
-                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <button class="btn btn-primary" type="button"
+                                                    onclick="replace_input_from_output()">
+                                                Replace Input
+                                                <span><span class="fas fa-arrow-up"></span></span>
+                                            </button>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -374,10 +371,11 @@
                                      id="tabs-text-3" role="tabpanel"
                                      aria-labelledby="tabs-text-3-tab">
 
-                                 <div class="alert alert-info" role="alert">
-                                    Generating a RSA key (1024 bits) which involves generating big primes which may take some time... <br>
-                                     And don't worry, this site will never store your keys (source code available)
-                                </div>
+                                    <div class="alert alert-info" role="alert">
+                                        Generating a RSA key (1024 bits) which involves generating big primes which may
+                                        take some time... <br>
+                                        And don't worry, this site will never store your keys (source code available)
+                                    </div>
 
                                     <form action="{% url 'index' %}" method="post" id="gen_rsa_key_form">
                                         {% csrf_token %}
@@ -391,17 +389,18 @@
                                     </form>
 
                                     {% if has_rsa_key_result == True %}
-                                    <form action="{% url 'index' %}" method="post" id="gen_rsa_key_form">
-                                        {% csrf_token %}
-                                        <div class="mt-3 input-group">
-                                            <input type="submit" name="download_rsa_key_file" class="btn btn-primary"
-                                                   value="Download Key File(PEM)" aria-label="Check"
-                                                   aria-describedby="check-icon">
-                                            <span class="input-group-text btn btn-primary" id="check-icon"><span
-                                                    class="fas fa-download"></span></span>
-                                        </div>
-                                    </form>
-                                    <table class="table table-hover mt-3"
+                                        <form action="{% url 'index' %}" method="post" id="gen_rsa_key_form">
+                                            {% csrf_token %}
+                                            <div class="mt-3 input-group">
+                                                <input type="submit" name="download_rsa_key_file"
+                                                       class="btn btn-primary"
+                                                       value="Download Key File(PEM)" aria-label="Check"
+                                                       aria-describedby="check-icon">
+                                                <span class="input-group-text btn btn-primary" id="check-icon"><span
+                                                        class="fas fa-download"></span></span>
+                                            </div>
+                                        </form>
+                                        <table class="table table-hover mt-3"
                                                style="table-layout:fixed;over-flow:break-word;">
                                             <tr>
                                                 <th scope="col" id="field">Field</th>
@@ -409,35 +408,41 @@
                                             </tr>
                                             <tr>
                                                 <th scope="row" id="p"
-                                                    rowspan="1">p</th>
+                                                    rowspan="1">p
+                                                </th>
                                                 <td headers="p value">{{ rsa_key_pair.p }}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row" id="p"
-                                                    rowspan="1">q</th>
+                                                    rowspan="1">q
+                                                </th>
                                                 <td headers="p value">{{ rsa_key_pair.q }}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row" id="p"
-                                                    rowspan="1">n</th>
+                                                    rowspan="1">n
+                                                </th>
                                                 <td headers="p value">{{ rsa_key_pair.n }}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row" id="p"
-                                                    rowspan="1">e</th>
+                                                    rowspan="1">e
+                                                </th>
                                                 <td headers="p value">{{ rsa_key_pair.e }}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row" id="p"
-                                                    rowspan="1">φ</th>
+                                                    rowspan="1">φ
+                                                </th>
                                                 <td headers="p value">{{ rsa_key_pair.phi }}</td>
                                             </tr>
                                             <tr>
                                                 <th scope="row" id="p"
-                                                    rowspan="1">d</th>
+                                                    rowspan="1">d
+                                                </th>
                                                 <td headers="p value">{{ rsa_key_pair.d }}</td>
                                             </tr>
-                                    </table>
+                                        </table>
                                     {% endif %}
                                 </div>
                                 {#                                end of RSA key generation#}
@@ -473,7 +478,7 @@
                                         {% elif has_ip_to_domain_result == True %}
                                             <div class="alert alert-info" role="alert" id="encode_decode_output">
                                                 {% for result in ip_to_domain_result %}
-                                                    {{ result | linebreaksbr}}<br>
+                                                    {{ result | linebreaksbr }}<br>
                                                 {% endfor %}
                                             </div>
                                         {% endif %}

@@ -4169,7 +4169,7 @@ textarea.form-control-lg {
   border: 0; }
   .dropdown-item:hover, .dropdown-item:focus {
     color: #161d27;
-    background-color: #F3F4F6; }
+    background-color: #161d27; }
   .dropdown-item.active, .dropdown-item:active {
     color: #1F2937;
     text-decoration: none;
@@ -4873,7 +4873,7 @@ textarea.form-control-lg {
   position: relative;
   display: block;
   color: #242e4c;
-  background-color: #ffffff;
+  background-color: #242E4C;
   border: 0.0625rem solid #E5E7EB;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
   @media (prefers-reduced-motion: reduce) {
@@ -4882,12 +4882,12 @@ textarea.form-control-lg {
   .page-link:hover {
     z-index: 2;
     color: #0b0f18;
-    background-color: #F3F4F6;
+    background-color: #1C2540;
     border-color: #E5E7EB; }
   .page-link:focus {
     z-index: 3;
     color: #0b0f18;
-    background-color: #F3F4F6;
+    background-color: #1C2540;
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(36, 46, 76, 0.25); }
 
