@@ -159,7 +159,7 @@ class EncodeDecodeResult(models.Model):
 			                            result=binascii.hexlify(encode_decode_input).decode('utf8'))
 		else:
 			result = EncodeDecodeResult(algorithm="Hex", is_encode=is_encode,
-			                            result=base64.b85decode(encode_decode_input).decode('utf8'))
+			                            result=binascii.unhexlify(encode_decode_input).decode('utf8'))
 		return result
 
 	# URL
