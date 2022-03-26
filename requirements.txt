@@ -1,0 +1,6 @@
+bitarray==2.4.0
+Django==3.2.10
+fake_useragent==0.1.11
+pyasn1==0.4.5
+requests==2.21.0
+Unipath==1.1
