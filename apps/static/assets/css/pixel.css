@@ -1966,7 +1966,7 @@ progress {
   --bs-table-active-color: #1F2937;
   --bs-table-active-bg: rgba(23, 31, 56, 0.1);
   --bs-table-hover-color: #1F2937;
-  --bs-table-hover-bg: rgba(23, 31, 56, 0.075);
+  --bs-table-hover-bg: rgba(255, 255, 255, 0.5);
   width: 100%;
   margin-bottom: 1rem;
   color: #1F2937;
