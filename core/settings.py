@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).parent
 CORE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = './,./2390090vkmlxm,;.p-=440-=30-9;[[]mn.erghu734jiko4856+*-/*bcjko3'
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
