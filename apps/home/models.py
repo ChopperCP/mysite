@@ -167,7 +167,7 @@ class EncodeDecodeResult(models.Model):
 	def url(encode_decode_input: str, is_encode):
 		if is_encode:
 			result = EncodeDecodeResult(algorithm="URL", is_encode=is_encode,
-			                            result=urllib.parse.quote_plus(encode_decode_input))
+			                            result=urllib.parse.quote(encode_decode_input))
 		else:
 			result = EncodeDecodeResult(algorithm="URL", is_encode=is_encode,
 			                            result=urllib.parse.unquote(encode_decode_input))
