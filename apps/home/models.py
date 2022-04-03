@@ -1871,7 +1871,7 @@ class IPLookupResult(models.Model):
 	@staticmethod
 	def ip138_spider(ip) -> Set:
 		ip138_url = 'https://site.ip138.com/' + str(ip) + '/'
-		ip138_r = requests.get(url=ip138_url, headers=IPLookupResult.headers_ip138, timeout=3).text
+		ip138_r = requests.get(url=ip138_url, headers=IPLookupResult.headers_ip138, timeout=3, verify=False).text
 		ip138_address = re.findall(r"<h3>(.*?)</h3>", ip138_r)  # 归属地
 		# result = re.findall(r"<li>(.*?)</li>", ip138_r)
 		if '<li>暂无结果</li>' in ip138_r:
@@ -1885,7 +1885,7 @@ class IPLookupResult(models.Model):
 	@staticmethod
 	def aizhan_spider(ip) -> Set:
 		aizhan_url = 'https://dns.aizhan.com/' + str(ip) + '/'
-		aizhan_r = requests.get(url=aizhan_url, headers=IPLookupResult.headers_aizhan, timeout=3).text
+		aizhan_r = requests.get(url=aizhan_url, headers=IPLookupResult.headers_aizhan, timeout=3, verify=False).text
 		#  1. 取出该地址的真实地址
 		aizhan_address = re.findall(r'''<strong>(.*?)</strong>''', aizhan_r)
 		#  2. 取出该ip的解析过多少个域名
