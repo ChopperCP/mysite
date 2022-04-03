@@ -17,7 +17,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 DEBUG = True
 
 # load production server from .env
-ALLOWED_HOSTS = ["159.138.32.59","127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
